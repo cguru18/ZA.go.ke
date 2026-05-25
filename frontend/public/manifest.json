@@ -1,0 +1,23 @@
+{
+  "short_name": "Treats & Heat",
+  "name": "Treats & Heat Premium Delivery",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300a86b'><path d='M17.75 3.06C17.75 3.06 14.88 2.06 12 5.06C9.12 2.06 6.25 3.06 6.25 3.06C6.25 3.06 5.25 6.06 8.25 9.06L12 13.06L15.75 9.06C18.75 6.06 17.75 3.06 17.75 3.06ZM12 21.06V14.06'/></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300a86b'><path d='M17.75 3.06C17.75 3.06 14.88 2.06 12 5.06C9.12 2.06 6.25 3.06 6.25 3.06C6.25 3.06 5.25 6.06 8.25 9.06L12 13.06L15.75 9.06C18.75 6.06 17.75 3.06 17.75 3.06ZM12 21.06V14.06'/></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#00a86b",
+  "background_color": "#0a0a14",
+  "orientation": "portrait",
+  "scope": "/",
+  "description": "Premium delivery across Nairobi."
+}
