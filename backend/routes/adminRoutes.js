@@ -407,6 +407,8 @@ router.get('/conversations', async (req, res) => {
 router.get('/conversations/:id/messages', async (req, res) => {
     try {
         const Message = require('../models/Message');
+        const User = require('../models/User');
+        const Order = require('../models/Order');
         const cryptoHelper = require('../utils/cryptoHelper');
         const conversationId = req.params.id;
 
@@ -431,7 +433,43 @@ router.get('/conversations/:id/messages', async (req, res) => {
             };
         });
 
-        res.json({ success: true, messages: decryptedMessages });
+        // ── Rich Profiling Database Integration ──────────────────
+        let userProfile = null;
+        try {
+            const customerUser = await User.findById(customerId).lean();
+            if (customerUser) {
+                // Fetch last 3 orders of the customer
+                const orders = await Order.find({ customerId }).sort({ createdAt: -1 }).limit(3).lean();
+                const logs = orders.map(o => ({
+                    action: `Placed Order #${o.orderId}`,
+                    timestamp: o.createdAt,
+                    details: `${o.products.map(p => `${p.name} (x${p.qty})`).join(', ')} - KES ${o.grossRevenue} (${o.paymentStatus})`
+                }));
+
+                // Fallback default log if logs are fewer than 3
+                if (logs.length < 3) {
+                    logs.push({
+                        action: "Account Registered",
+                        timestamp: customerUser.createdAt || new Date(),
+                        details: "Customer account initialized on ZA.go.ke"
+                    });
+                }
+
+                userProfile = {
+                    fullName: customerUser.fullName,
+                    profilePictureUrl: customerUser.profilePictureUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150',
+                    email: customerUser.email,
+                    accountTier: customerUser.tier || 'STANDARD',
+                    createdAt: customerUser.createdAt,
+                    location: 'Nairobi, Kenya',
+                    logs
+                };
+            }
+        } catch (err) {
+            console.error('Failed to get rich user profile in /conversations/:id/messages:', err);
+        }
+
+        res.json({ success: true, messages: decryptedMessages, userProfile });
     } catch (error) {
         console.error('Fetch conversation messages error:', error);
         res.status(500).json({ success: false, message: 'Failed to fetch messages' });

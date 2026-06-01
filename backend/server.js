@@ -383,6 +383,7 @@ if (cluster.isMaster) {
 
     // ── Support Chat Namespace (/support) ─────────────────────
     const supportIo = io.of('/support');
+    const activeConnections = new Map();
 
     supportIo.use(async (socket, next) => {
         const { role, customerId, adminSecretKey, adminEmail, token } = socket.handshake.auth || {};
@@ -405,6 +406,7 @@ if (cluster.isMaster) {
                 if (!isKeyMatch) return next(new Error('Unauthorized Admin Key'));
                 socket.isAdmin    = true;
                 socket.adminEmail = adminEmail;
+                socket.adminId    = adminUser._id.toString();
                 return next();
             } catch {
                 return next(new Error('Internal Auth Error'));
@@ -434,15 +436,51 @@ if (cluster.isMaster) {
     supportIo.on('connection', (socket) => {
         if (socket.isAdmin) {
             socket.join('admin_pool');
-            console.log(`Admin [${socket.adminEmail}] entered admin_pool`);
-        } else {
+            activeConnections.set(socket.adminId, {
+                socketId: socket.id,
+                role: 'admin',
+                status: 'online',
+                lastSeen: new Date()
+            });
+            
+            // Broadcast admin online status to all sockets
+            supportIo.emit('admin_status_change', {
+                adminId: socket.adminId,
+                status: 'online',
+                lastSeen: new Date()
+            });
+            console.log(`Admin [${socket.adminEmail}] entered admin_pool & registered online`);
+        } else if (socket.customerId) {
             socket.join(`customer_${socket.customerId}`);
+            activeConnections.set(socket.customerId, {
+                socketId: socket.id,
+                role: 'customer',
+                status: 'online',
+                lastSeen: new Date()
+            });
+
+            // Immediately send online status of all online admins to this connecting customer
+            for (const [userId, conn] of activeConnections.entries()) {
+                if (conn.role === 'admin' && conn.status === 'online') {
+                    socket.emit('admin_status_change', {
+                        adminId: userId,
+                        status: 'online',
+                        lastSeen: conn.lastSeen
+                    });
+                }
+            }
         }
 
         // Join specific room for a conversation (user and admin support)
         socket.on('join_conversation', (conversationId) => {
             socket.join(conversationId);
             console.log(`Socket ${socket.id} joined conversation: ${conversationId}`);
+        });
+
+        // Broadcast transient typing status indicator
+        socket.on('typing_status', (data) => {
+            const { roomId, isTyping } = data;
+            socket.to(roomId).emit('typing_status', { roomId, isTyping });
         });
 
         // Intercepts message, encrypts and saves, decrypts and broadcasts
@@ -491,6 +529,34 @@ if (cluster.isMaster) {
         });
 
         socket.on('disconnect', () => {
+            if (socket.isAdmin) {
+                const adminId = socket.adminId;
+                const lastSeenTime = new Date();
+                const conn = activeConnections.get(adminId);
+                if (conn && conn.socketId === socket.id) {
+                    activeConnections.set(adminId, {
+                        ...conn,
+                        status: 'offline',
+                        lastSeen: lastSeenTime
+                    });
+                }
+                supportIo.emit('admin_status_change', {
+                    adminId,
+                    status: 'offline',
+                    lastSeen: lastSeenTime
+                });
+                console.log(`Admin [${socket.adminEmail}] disconnected`);
+            } else if (socket.customerId) {
+                const customerId = socket.customerId;
+                const conn = activeConnections.get(customerId);
+                if (conn && conn.socketId === socket.id) {
+                    activeConnections.set(customerId, {
+                        ...conn,
+                        status: 'offline',
+                        lastSeen: new Date()
+                    });
+                }
+            }
             console.log(`Socket ${socket.id} disconnected from support channel`);
         });
     });

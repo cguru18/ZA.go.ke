@@ -28,7 +28,28 @@ export default function UserChatbox() {
     const [socket, setSocket] = useState(null);
     const messagesEndRef = useRef(null);
 
+    const [adminInfo, setAdminInfo] = useState({
+        fullName: "Agent Mwiti",
+        avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=150",
+        status: "offline",
+        lastSeen: null
+    });
+    const [isAdminTyping, setIsAdminTyping] = useState(false);
+
     const conversationId = user ? `conv_${user._id}` : null;
+    const typingTimeoutRef = useRef(null);
+
+    const formatLastSeen = (dateString) => {
+        if (!dateString) return 'Offline';
+        const date = new Date(dateString);
+        const diffMs = new Date() - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        if (diffMins < 1) return 'Last seen just now';
+        if (diffMins < 60) return `Last seen ${diffMins}m ago`;
+        const diffHours = Math.floor(diffMins / 60);
+        if (diffHours < 24) return `Last seen ${diffHours}h ago`;
+        return `Last seen ${date.toLocaleDateString()}`;
+    };
 
     // Scroll to bottom anchor
     const scrollToBottom = () => {
@@ -40,6 +61,13 @@ export default function UserChatbox() {
             scrollToBottom();
         }
     }, [messages, isOpen]);
+
+    // Clear typing timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        };
+    }, []);
 
     // 1. Fetch decrypted message history from database on mount
     useEffect(() => {
@@ -94,12 +122,41 @@ export default function UserChatbox() {
             ]);
         });
 
+        socketIo.on('admin_status_change', (data) => {
+            setAdminInfo(prev => ({
+                ...prev,
+                status: data.status,
+                lastSeen: data.lastSeen ? new Date(data.lastSeen) : prev.lastSeen
+            }));
+        });
+
+        socketIo.on('typing_status', (data) => {
+            setIsAdminTyping(data.isTyping);
+        });
+
         setSocket(socketIo);
 
         return () => {
             socketIo.disconnect();
         };
     }, [user, token, conversationId]);
+
+    const handleInputChange = (e) => {
+        setInput(e.target.value);
+
+        if (socket && conversationId) {
+            // Emit typing start
+            socket.emit('typing_status', { roomId: conversationId, isTyping: true });
+
+            // Clear previous timeout
+            if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
+            // Set timeout to emit typing stop after 2 seconds
+            typingTimeoutRef.current = setTimeout(() => {
+                socket.emit('typing_status', { roomId: conversationId, isTyping: false });
+            }, 2000);
+        }
+    };
 
     const handleSend = (e) => {
         e.preventDefault();
@@ -111,6 +168,10 @@ export default function UserChatbox() {
             senderId: user._id,
             message: input.trim()
         });
+
+        // Clear typing timeout and emit typing stop immediately
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        socket.emit('typing_status', { roomId: conversationId, isTyping: false });
 
         setInput('');
     };
@@ -136,13 +197,29 @@ export default function UserChatbox() {
                         <div className="relative bg-gradient-to-r from-fuchsia-600 to-purple-600 p-4 flex justify-between items-center text-white overflow-hidden flex-shrink-0">
                             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30 mix-blend-overlay"></div>
                             <div className="relative z-10 flex items-center gap-3">
-                                <div className="relative flex h-3 w-3">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                                {/* Admin Avatar */}
+                                <div className="relative shrink-0">
+                                    <img 
+                                        src={adminInfo.avatar} 
+                                        alt={adminInfo.fullName} 
+                                        className="w-10 h-10 rounded-full object-cover border border-white/20"
+                                    />
+                                    <span className="absolute bottom-0 right-0 flex h-2.5 w-2.5">
+                                        {adminInfo.status === 'online' ? (
+                                            <>
+                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500 border border-white"></span>
+                                            </>
+                                        ) : (
+                                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-gray-400 border border-white"></span>
+                                        )}
+                                    </span>
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-sm tracking-wide">Secure support Chat</h3>
-                                    <p className="text-[10px] text-fuchsia-100 font-medium">End-to-End Encrypted (AES-GCM)</p>
+                                    <h3 className="font-bold text-sm tracking-wide leading-tight">{adminInfo.fullName}</h3>
+                                    <p className="text-[10px] text-fuchsia-100 font-medium">
+                                        {adminInfo.status === 'online' ? 'Online' : formatLastSeen(adminInfo.lastSeen)}
+                                    </p>
                                 </div>
                             </div>
                             <button onClick={() => setIsOpen(false)} className="relative z-10 hover:bg-white/20 p-1.5 rounded-full transition-all">
@@ -192,6 +269,22 @@ export default function UserChatbox() {
                             <div ref={messagesEndRef} />
                         </div>
 
+                        {/* Typing status indicator element */}
+                        {isAdminTyping && (
+                            <div className={`px-4 py-2 flex items-center gap-1.5 text-[11px] font-semibold tracking-wide border-t flex-shrink-0 ${
+                                isDarkMode ? 'bg-[#0a0a0a]/90 border-white/5 text-fuchsia-400' : 'bg-white border-gray-100 text-fuchsia-600'
+                            }`}>
+                                <div className="flex gap-1 items-center">
+                                    <span>{adminInfo.fullName} is typing</span>
+                                    <span className="flex gap-0.5">
+                                        <span className="w-1 h-1 rounded-full bg-current animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                                        <span className="w-1 h-1 rounded-full bg-current animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                                        <span className="w-1 h-1 rounded-full bg-current animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Input Form */}
                         <form onSubmit={handleSend} className={`p-3 flex gap-2 items-center flex-shrink-0 ${isDarkMode ? 'bg-black/40 border-t border-white/5' : 'bg-white border-t border-gray-100'}`}>
                             <div className={`flex-1 flex items-center rounded-2xl overflow-hidden transition-colors ${
@@ -201,7 +294,7 @@ export default function UserChatbox() {
                                     type="text"
                                     placeholder="Type encrypted message..."
                                     value={input}
-                                    onChange={(e) => setInput(e.target.value)}
+                                    onChange={handleInputChange}
                                     className="w-full bg-transparent p-3 text-xs outline-none placeholder:text-gray-400"
                                 />
                             </div>

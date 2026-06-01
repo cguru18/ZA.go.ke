@@ -5,6 +5,7 @@ import { Send, Users, ShieldAlert, Sparkles, MessageSquare } from 'lucide-react'
 import { AuthContext } from '../../context/AuthContext';
 import { ThemeContext } from '../../context/ThemeContext';
 import { motion } from 'framer-motion';
+import ClientProfileView from './ClientProfileView';
 
 // Strict sanitization filter to prevent Cross-Site Scripting (XSS)
 const sanitizeHTML = (str) => {
@@ -29,6 +30,10 @@ export default function AdminChatConsole({ initialConversationId = null }) {
     const [socket, setSocket] = useState(null);
     const messagesEndRef = useRef(null);
 
+    const [activeUserProfile, setActiveUserProfile] = useState(null);
+    const [isCustomerTyping, setIsCustomerTyping] = useState(false);
+    const typingTimeoutRef = useRef(null);
+
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
@@ -42,6 +47,13 @@ export default function AdminChatConsole({ initialConversationId = null }) {
             setActiveChat(initialConversationId);
         }
     }, [initialConversationId]);
+
+    // Clean up typing timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        };
+    }, []);
 
     // 1. Fetch all unique active conversation threads
     const fetchConversations = async () => {
@@ -86,6 +98,7 @@ export default function AdminChatConsole({ initialConversationId = null }) {
                         message: sanitizeHTML(m.message)
                     }));
                     setMessages(sanitized);
+                    setActiveUserProfile(data.userProfile || null);
                 }
             } catch (err) {
                 console.error('Failed to load messages:', err);
@@ -136,6 +149,12 @@ export default function AdminChatConsole({ initialConversationId = null }) {
             fetchConversations();
         });
 
+        socketIo.on('typing_status', (data) => {
+            if (data.roomId === activeChat) {
+                setIsCustomerTyping(data.isTyping);
+            }
+        });
+
         setSocket(socketIo);
 
         return () => {
@@ -146,8 +165,26 @@ export default function AdminChatConsole({ initialConversationId = null }) {
     // 4. Bind socket connection to selected room on switch
     const selectConversation = (id) => {
         setActiveChat(id);
+        setIsCustomerTyping(false); // Reset typing status when switching threads
         if (socket) {
             socket.emit('join_conversation', id);
+        }
+    };
+
+    const handleInputChange = (e) => {
+        setInput(e.target.value);
+
+        if (socket && activeChat) {
+            // Emit typing start
+            socket.emit('typing_status', { roomId: activeChat, isTyping: true });
+
+            // Clear previous timeout
+            if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
+            // Set timeout to emit typing stop after 2 seconds
+            typingTimeoutRef.current = setTimeout(() => {
+                socket.emit('typing_status', { roomId: activeChat, isTyping: false });
+            }, 2000);
         }
     };
 
@@ -160,6 +197,10 @@ export default function AdminChatConsole({ initialConversationId = null }) {
             senderId: user._id || user.id,
             message: input.trim()
         });
+
+        // Clear typing timeout and emit typing stop immediately
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        socket.emit('typing_status', { roomId: activeChat, isTyping: false });
 
         setInput('');
     };
@@ -321,6 +362,22 @@ export default function AdminChatConsole({ initialConversationId = null }) {
                             <div ref={messagesEndRef} />
                         </div>
 
+                        {/* Customer Typing status indicator */}
+                        {isCustomerTyping && (
+                            <div className={`px-5 py-2 flex items-center gap-1.5 text-[11px] font-semibold tracking-wide border-t flex-shrink-0 ${
+                                isDarkMode ? 'bg-[#0a0a20]/20 border-white/5 text-fuchsia-400' : 'bg-gray-50 border-gray-100 text-fuchsia-600'
+                            }`}>
+                                <div className="flex gap-1 items-center">
+                                    <span>Customer is typing</span>
+                                    <span className="flex gap-0.5">
+                                        <span className="w-1 h-1 rounded-full bg-current animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                                        <span className="w-1 h-1 rounded-full bg-current animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                                        <span className="w-1 h-1 rounded-full bg-current animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Input Area */}
                         <form onSubmit={handleSend} className={`p-4 flex gap-2 items-center flex-shrink-0 ${isDarkMode ? 'bg-black/40 border-t border-white/5' : 'bg-white border-t border-gray-100'}`}>
                             <div className={`flex-1 flex items-center rounded-2xl overflow-hidden transition-colors ${
@@ -330,8 +387,8 @@ export default function AdminChatConsole({ initialConversationId = null }) {
                                     type="text"
                                     placeholder="Enter encrypted support response..."
                                     value={input}
-                                    onChange={(e) => setInput(e.target.value)}
-                                    className="w-full bg-transparent p-3.5 text-xs outline-none placeholder:text-gray-400 text-white"
+                                    onChange={handleInputChange}
+                                    className={`w-full bg-transparent p-3.5 text-xs outline-none placeholder:text-gray-400 ${isDarkMode ? 'text-white' : 'text-slate-800'}`}
                                 />
                             </div>
                             <button
@@ -355,6 +412,9 @@ export default function AdminChatConsole({ initialConversationId = null }) {
                     </div>
                 )}
             </div>
+
+            {/* Right Sidebar: Dynamic Client Profile Drawer */}
+            <ClientProfileView profile={activeUserProfile} isDarkMode={isDarkMode} />
         </div>
     );
 }
