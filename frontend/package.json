@@ -17,6 +17,7 @@
     "json2csv": "^6.0.0-alpha.2",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.14.0",
+    "mapbox-gl": "^3.24.0",
     "ogl": "^1.0.11",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
