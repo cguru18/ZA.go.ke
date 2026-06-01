@@ -197,6 +197,7 @@ export default function Home() {
     const navigate = useNavigate();
 
     const [products,       setProducts]       = useState([]);
+    const [productsError,  setProductsError]  = useState('');
     const [searchTerm,     setSearchTerm]     = useState('');
     const [category,       setCategory]       = useState('');
     const [sort,           setSort]           = useState('-newest');
@@ -215,6 +216,7 @@ export default function Home() {
 
     const fetchProducts = async (unlocked, search = '', cat = '', sortBy = '-newest') => {
         try {
+            setProductsError('');
             let url = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products?unlocked=${unlocked}`;
             if (search) url += `&search=${encodeURIComponent(search)}`;
             if (cat)    url += `&category=${encodeURIComponent(cat)}`;
@@ -224,6 +226,7 @@ export default function Home() {
             setProducts(data.products || data); 
         } catch (err) {
             console.error('Failed to fetch products', err);
+            setProductsError(err.response?.data?.message || err.message || 'Failed to retrieve products. Please verify your connection.');
         }
     };
 
@@ -494,7 +497,25 @@ export default function Home() {
             )}
 
             {/* ── Product Grid ───────────────────────────────────────────── */}
-            {filteredProducts.length === 0 ? (
+            {productsError ? (
+                <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex flex-col items-center justify-center py-20 px-6 rounded-3xl text-center"
+                    style={{
+                        background: 'rgba(128,0,32,0.12)',
+                        border: '1px solid rgba(128,0,32,0.25)',
+                        boxShadow: '0 8px 32px rgba(128,0,32,0.08)',
+                    }}
+                >
+                    <div className="w-14 h-14 rounded-full mb-4 flex items-center justify-center"
+                         style={{ background: 'rgba(128,0,32,0.2)', border: '1px solid rgba(128,0,32,0.3)' }}>
+                        <span className="text-[#f87171] font-bold text-xl">⚠</span>
+                    </div>
+                    <p className="text-lg font-bold text-white mb-1">Could Not Load Menu</p>
+                    <p className="text-sm text-gray-400 max-w-md">{productsError}</p>
+                </motion.div>
+            ) : filteredProducts.length === 0 ? (
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}

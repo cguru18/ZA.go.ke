@@ -62,8 +62,9 @@ if (cluster.isMaster) {
     const { createAdapter } = require('@socket.io/redis-adapter');
 
     const io = new Server(server, {
-        cors: { 
-            origin: [process.env.FRONTEND_URL || 'http://localhost:5173', 'http://localhost:3000'],
+        cors: {
+            origin: process.env.NODE_ENV === 'production' ? process.env.FRONTEND_URL : "http://localhost:3000",
+            methods: ["GET", "POST"],
             credentials: true
         },
         pingTimeout:   60000,
@@ -93,8 +94,12 @@ if (cluster.isMaster) {
     app.set('trust proxy', 1);
 
     // ── CORS + Body Parsing ───────────────────────────────────
-    const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:5173', 'http://localhost:3000'];
-    app.use(cors({ 
+    const allowedOrigins = [
+        'http://localhost:3000',
+        process.env.FRONTEND_URL
+    ].filter(Boolean);
+
+    app.use(cors({
         origin: function(origin, callback) {
             if (!origin || allowedOrigins.includes(origin)) {
                 callback(null, true);
@@ -102,6 +107,8 @@ if (cluster.isMaster) {
                 callback(new Error('Not allowed by CORS'));
             }
         },
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
         credentials: true
     }));
     app.use(express.json({ limit: '10mb' }));
