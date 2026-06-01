@@ -13,15 +13,15 @@ const { protect, admin } = require('../middleware/authMiddleware');
 
 // POST /api/admin/signup
 router.post('/signup', async (req, res) => {
-    const { fullName, email, password, masterPassword } = req.body;
-
-    const MASTER_PASSWORD = process.env.MASTER_PASSWORD || 'HEAT_AND_TREATS_2026';
-
-    if (masterPassword !== MASTER_PASSWORD) {
-        return res.status(403).json({ success: false, message: 'Invalid Master Password.' });
-    }
-
     try {
+        const { fullName, email, password, masterPassword } = req.body;
+
+        const MASTER_PASSWORD = process.env.MASTER_PASSWORD || 'HEAT_AND_TREATS_2026';
+
+        if (masterPassword !== MASTER_PASSWORD) {
+            return res.status(403).json({ success: false, message: 'Invalid Master Password.' });
+        }
+
         const userExists = await User.findOne({ email });
         if (userExists) {
             return res.status(400).json({ success: false, message: 'User already exists' });
@@ -52,7 +52,7 @@ router.post('/signup', async (req, res) => {
         });
 
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Server error' });
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 

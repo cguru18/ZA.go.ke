@@ -93,6 +93,24 @@ if (cluster.isMaster) {
     // ── Trust proxy (Required for Cloud Run & express-rate-limit) ────────
     app.set('trust proxy', 1);
 
+    // ── Manual Preflight Interceptor (CORS Manual Fallback) ───
+    app.use((req, res, next) => {
+        const origin = req.headers.origin;
+        // Explicitly mirror back localhost or target production domains if they match
+        if (origin && (origin === 'http://localhost:3000' || origin.includes('zago'))) {
+            res.setHeader('Access-Control-Allow-Origin', origin);
+        }
+        res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        
+        // Instantly intercept and terminate preflight requests with a clean 204 No Content response
+        if (req.method === 'OPTIONS') {
+            return res.sendStatus(204);
+        }
+        next();
+    });
+
     // ── CORS + Body Parsing ───────────────────────────────────
     const allowedOrigins = [
         'http://localhost:3000',
