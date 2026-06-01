@@ -411,6 +411,20 @@ if (cluster.isMaster) {
             }
         } else if (role === 'CUSTOMER' && customerId) {
             socket.customerId = customerId;
+            try {
+                const customerUser = await User.findById(customerId).lean();
+                if (customerUser) {
+                    socket.userProfile = {
+                        fullName: customerUser.fullName,
+                        profilePictureUrl: customerUser.profilePictureUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150',
+                        email: customerUser.email,
+                        tier: customerUser.tier || 'STANDARD',
+                        createdAt: customerUser.createdAt
+                    };
+                }
+            } catch (err) {
+                console.error('Socket profile query failure:', err.message);
+            }
             return next();
         } else {
             return next(new Error('Authentication Error'));
@@ -455,7 +469,8 @@ if (cluster.isMaster) {
                     conversationId,
                     senderId,
                     message: message.trim(),
-                    timestamp: newMsg.timestamp
+                    timestamp: newMsg.timestamp,
+                    userProfile: socket.userProfile
                 });
 
                 // Also notify admin pool if sender is customer and not in the room yet
@@ -465,7 +480,8 @@ if (cluster.isMaster) {
                         conversationId,
                         senderId,
                         message: message.trim(),
-                        timestamp: newMsg.timestamp
+                        timestamp: newMsg.timestamp,
+                        userProfile: socket.userProfile
                     });
                 }
             } catch (err) {

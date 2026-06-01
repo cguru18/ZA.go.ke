@@ -86,6 +86,14 @@ router.post('/login', async (req, res) => {
             expiresIn: '30d'
         });
 
+        // Set securely signed, HTTP-Only cookie for premium route guarding
+        res.cookie('admin_token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+        });
+
         res.status(200).json({
             success: true,
             token,
@@ -104,6 +112,22 @@ router.post('/login', async (req, res) => {
 // Secure Admin Routes
 router.use(protect);
 router.use(admin);
+
+// GET /api/admin/verify
+// Explicit cryptographic pre-flight verification check
+router.get('/verify', (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: 'Cryptographic claims verified successfully',
+        user: {
+            id: req.user._id,
+            fullName: req.user.fullName,
+            email: req.user.email,
+            role: req.user.role
+        }
+    });
+});
+
 
 // GET /api/admin/financial-summary
 // Lightweight aggregation for the financial summary KPI card
@@ -312,6 +336,7 @@ router.post('/rotate-codes', async (req, res) => {
 router.get('/conversations', async (req, res) => {
     try {
         const Message = require('../models/Message');
+        const User = require('../models/User');
         const cryptoHelper = require('../utils/cryptoHelper');
 
         // Aggregation to find latest message per conversationId
@@ -333,11 +358,40 @@ router.get('/conversations', async (req, res) => {
                 lastMsg.iv,
                 lastMsg.authTag
             );
+
+            // Fetch profile and details from database
+            const customerId = c._id.replace('conv_', '');
+            let userProfile = null;
+            try {
+                const customerUser = await User.findById(customerId).lean();
+                if (customerUser) {
+                    userProfile = {
+                        fullName: customerUser.fullName,
+                        profilePictureUrl: customerUser.profilePictureUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150',
+                        email: customerUser.email,
+                        tier: customerUser.tier || 'STANDARD',
+                        createdAt: customerUser.createdAt
+                    };
+                }
+            } catch (err) {
+                console.error('Failed to get user profile in /conversations:', err);
+            }
+
+            // Calculate unreadCount for the thread (customer sent it, not read by admin)
+            const unreadCount = await Message.countDocuments({
+                conversationId: c._id,
+                senderId: customerId,
+                isReadByAdmin: false
+            });
+
             return {
                 conversationId: c._id,
                 lastMessage: decryptedContent,
                 timestamp: lastMsg.timestamp,
-                senderId: lastMsg.senderId
+                lastMessageTimestamp: lastMsg.timestamp, // Configuration dynamic sorting
+                senderId: lastMsg.senderId,
+                unreadCount,
+                userProfile
             };
         }));
 
@@ -356,6 +410,13 @@ router.get('/conversations/:id/messages', async (req, res) => {
         const cryptoHelper = require('../utils/cryptoHelper');
         const conversationId = req.params.id;
 
+        // Mark messages as read by admin when viewing history
+        const customerId = conversationId.replace('conv_', '');
+        await Message.updateMany(
+            { conversationId, senderId: customerId, isReadByAdmin: false },
+            { $set: { isReadByAdmin: true } }
+        );
+
         const messages = await Message.find({ conversationId }).sort({ timestamp: 1 });
 
         const decryptedMessages = messages.map(m => {
@@ -365,7 +426,8 @@ router.get('/conversations/:id/messages', async (req, res) => {
                 conversationId: m.conversationId,
                 senderId: m.senderId,
                 message: plainContent,
-                timestamp: m.timestamp
+                timestamp: m.timestamp,
+                isReadByAdmin: m.isReadByAdmin
             };
         });
 
@@ -375,5 +437,6 @@ router.get('/conversations/:id/messages', async (req, res) => {
         res.status(500).json({ success: false, message: 'Failed to fetch messages' });
     }
 });
+
 
 module.exports = router;

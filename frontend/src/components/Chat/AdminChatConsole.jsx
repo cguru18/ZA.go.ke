@@ -51,12 +51,19 @@ export default function AdminChatConsole({ initialConversationId = null }) {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             if (data.success) {
-                setConversations(data.conversations);
+                // Dynamically sort conversation threads using lastMessageTimestamp configuration
+                const sorted = [...data.conversations].sort((a, b) => {
+                    const timeA = new Date(a.lastMessageTimestamp || a.timestamp || 0);
+                    const timeB = new Date(b.lastMessageTimestamp || b.timestamp || 0);
+                    return timeB - timeA;
+                });
+                setConversations(sorted);
             }
         } catch (err) {
             console.error('Failed to load conversations:', err);
         }
     };
+
 
     useEffect(() => {
         if (!user || user.role !== 'ADMIN') return;
@@ -195,21 +202,54 @@ export default function AdminChatConsole({ initialConversationId = null }) {
                                 <button
                                     key={c.conversationId}
                                     onClick={() => selectConversation(c.conversationId)}
-                                    className={`w-full p-3 rounded-2xl text-left flex flex-col gap-1 transition-all ${
+                                    className={`w-full p-3.5 rounded-2xl text-left flex items-start gap-3 transition-all relative border ${
                                         isActive 
                                             ? 'bg-gradient-to-r from-fuchsia-600/20 to-purple-600/20 border border-fuchsia-500/30' 
-                                            : `border border-transparent ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-black/5'}`
+                                            : `border-transparent ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-black/5'}`
                                     }`}
                                 >
-                                    <span className="font-bold text-xs text-white truncate">
-                                        {c.conversationId.replace('conv_', 'User: ')}
-                                    </span>
-                                    <span className="text-[10px] text-gray-400 truncate">
-                                        {c.lastMessage}
-                                    </span>
-                                    <span className="text-[9px] text-gray-500 text-right mt-1">
-                                        {new Date(c.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                    </span>
+                                    {/* Avatar with dynamic fallback */}
+                                    <div className="relative shrink-0">
+                                        <img 
+                                            src={c.userProfile?.profilePictureUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150'} 
+                                            alt={c.userProfile?.fullName || 'User'} 
+                                            className="w-10 h-10 rounded-full object-cover border border-white/10"
+                                        />
+                                        {c.userProfile?.tier === 'VIP' && (
+                                            <span className="absolute -top-1 -right-1 flex h-4 w-4 rounded-full bg-amber-500 border border-[#0a0a0a] items-center justify-center text-[8px] font-black text-black">V</span>
+                                        )}
+                                    </div>
+
+                                    {/* Profile Info */}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center justify-between gap-1 mb-1">
+                                            <span className="font-bold text-xs text-white truncate">
+                                                {c.userProfile?.fullName || c.conversationId.replace('conv_', 'User ')}
+                                            </span>
+                                            <span className="text-[8px] text-gray-500 whitespace-nowrap">
+                                                {new Date(c.lastMessageTimestamp || c.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            </span>
+                                        </div>
+                                        <p className="text-[10px] text-gray-400 truncate mb-1">
+                                            {c.lastMessage}
+                                        </p>
+                                        {c.userProfile && (
+                                            <span className={`px-2 py-0.5 rounded-full text-[8px] font-bold tracking-wider uppercase ${
+                                                c.userProfile.tier === 'VIP'
+                                                    ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                                                    : 'bg-jade/10 text-jade border border-jade/20'
+                                            }`}>
+                                                {c.userProfile.tier}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {/* Unread Counter Badge */}
+                                    {c.unreadCount > 0 && (
+                                        <span className="absolute top-3.5 right-3 px-1.5 py-0.5 rounded-full text-[9px] font-black bg-fuchsia-600 text-white shadow-lg animate-pulse">
+                                            {c.unreadCount}
+                                        </span>
+                                    )}
                                 </button>
                             );
                         })
@@ -222,16 +262,41 @@ export default function AdminChatConsole({ initialConversationId = null }) {
                 {activeChat ? (
                     <>
                         {/* Chat Header */}
-                        <div className="p-4 border-b border-white/5 flex justify-between items-center bg-black/10 flex-shrink-0">
-                            <div>
-                                <h4 className="font-bold text-sm text-white">
-                                    Active Session: {activeChat.replace('conv_', '')}
-                                </h4>
-                                <p className="text-[10px] text-fuchsia-400 flex items-center gap-1 mt-0.5">
-                                    <Sparkles size={10} /> End-to-End Encrypted Tunnel
-                                </p>
-                            </div>
-                        </div>
+                        {(() => {
+                            const activeConv = conversations.find(c => c.conversationId === activeChat);
+                            return (
+                                <div className="p-4 border-b border-white/5 flex justify-between items-center bg-black/10 flex-shrink-0">
+                                    <div className="flex items-center gap-3">
+                                        <img 
+                                            src={activeConv?.userProfile?.profilePictureUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150'} 
+                                            alt="User Profile" 
+                                            className="w-10 h-10 rounded-full object-cover border border-white/10"
+                                        />
+                                        <div>
+                                            <h4 className="font-bold text-sm text-white flex items-center gap-2">
+                                                {activeConv?.userProfile?.fullName || 'Active Session'}
+                                                {activeConv?.userProfile && (
+                                                    <span className={`px-1.5 py-0.5 rounded text-[8px] font-black ${
+                                                        activeConv.userProfile.tier === 'VIP' ? 'bg-amber-500/20 text-amber-400' : 'bg-jade/20 text-jade'
+                                                    }`}>
+                                                        {activeConv.userProfile.tier}
+                                                    </span>
+                                                )}
+                                            </h4>
+                                            <p className="text-[9px] text-gray-500">
+                                                {activeConv?.userProfile?.email || activeChat.replace('conv_', '')}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] text-fuchsia-400 flex items-center gap-1">
+                                            <Sparkles size={10} /> Secure Tunnel
+                                        </p>
+                                    </div>
+                                </div>
+                            );
+                        })()}
+
 
                         {/* Messages Log */}
                         <div className={`flex-1 p-5 overflow-y-auto flex flex-col gap-3 ${isDarkMode ? 'bg-black/20' : 'bg-gray-50/50'}`}>

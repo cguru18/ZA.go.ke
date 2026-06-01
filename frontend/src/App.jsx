@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import Layout from './layouts/Layout';
 import Skeleton from './components/Skeleton';
+import AdminRouteGuard from './components/AdminRouteGuard';
 
 // Regular imports for critical path
 import Home from './pages/Home';
@@ -40,9 +41,10 @@ function App() {
                   <Route path="signup" element={<Signup />} />
                   <Route path="profile" element={<Profile />} />
                   <Route path="checkout" element={<Checkout />} />
-                  <Route path="admin" element={<AdminDashboard />} />
+                  <Route path="admin" element={<AdminRouteGuard><AdminDashboard /></AdminRouteGuard>} />
                   <Route path="admin-login" element={<AdminLogin />} />
-                  <Route path="map" element={<LiveMap />} />
+                  <Route path="map" element={<AdminRouteGuard><LiveMap /></AdminRouteGuard>} />
+
                   <Route path="sell" element={<SellProduct />} />
                   <Route path="search" element={<div className="p-8 text-white">Search Coming Soon</div>} />
                 </Route>
