@@ -6,7 +6,7 @@ import { ThemeContext } from '../context/ThemeContext';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
 import GraffitiLogo from '../components/GraffitiLogo';
-import ChatBubble from '../components/ChatBubble';
+import UserChatbox from '../components/Chat/UserChatbox';
 
 const NavItem = ({ icon, label, path, special, badge, danger, isMenuOpen, isDarkMode, isActive, onClick }) => {
     let base = 'group relative flex items-center gap-3 px-4 py-3.5 rounded-full cursor-pointer transition-all duration-400 overflow-hidden ';
@@ -191,7 +191,7 @@ export default function Layout() {
                 </div>
             </main>
 
-            <ChatBubble />
+            <UserChatbox />
 
             <div className="md:hidden fixed bottom-0 left-0 right-0 z-[100] px-4 pb-4 pt-2 safe-area-bottom"
                 style={{ background: 'linear-gradient(to top, rgba(10,10,20,0.95), transparent)' }}>

@@ -425,48 +425,57 @@ if (cluster.isMaster) {
             socket.join(`customer_${socket.customerId}`);
         }
 
-        socket.on('customer_query', async (messageData) => {
-            try {
-                const text    = typeof messageData === 'string' ? messageData : messageData.message;
-                const orderId = messageData.orderId || null; // Context from tracker
-                
-                if (!text || !text.trim()) return;
-                
-                const newMsg = await new Message({
-                    senderId:   socket.customerId,
-                    receiverId: null,
-                    orderId:    orderId,
-                    message:    text.trim(),
-                }).save();
+        // Join specific room for a conversation (user and admin support)
+        socket.on('join_conversation', (conversationId) => {
+            socket.join(conversationId);
+            console.log(`Socket ${socket.id} joined conversation: ${conversationId}`);
+        });
 
-                supportIo.to('admin_pool').emit('new_inquiry_alert', {
-                    _id:       newMsg._id,
-                    senderId:  socket.customerId,
-                    orderId:   newMsg.orderId,
-                    message:   newMsg.message,
-                    timestamp: newMsg.createdAt
+        // Intercepts message, encrypts and saves, decrypts and broadcasts
+        socket.on('send_message', async (data) => {
+            const { conversationId, senderId, message } = data;
+            if (!message || !message.trim()) return;
+            try {
+                // 1. Encrypt message payload
+                const cryptoHelper = require('./utils/cryptoHelper');
+                const encrypted = cryptoHelper.encryptMessage(message.trim());
+                
+                // 2. Save encrypted tokens securely to database
+                const newMsg = await new Message({
+                    conversationId,
+                    senderId,
+                    encryptedContent: encrypted.encryptedContent,
+                    iv: encrypted.iv,
+                    authTag: encrypted.authTag
+                }).save();
+                
+                // 3. Emit clean receive_message containing plaintext and sender ID to matching room
+                supportIo.to(conversationId).emit('receive_message', {
+                    _id: newMsg._id,
+                    conversationId,
+                    senderId,
+                    message: message.trim(),
+                    timestamp: newMsg.timestamp
                 });
 
-                socket.emit('DELIVERED', { _id: newMsg._id, status: '100% Delivered to Admins' });
+                // Also notify admin pool if sender is customer and not in the room yet
+                if (socket.customerId) {
+                    supportIo.to('admin_pool').emit('new_inquiry_alert', {
+                        _id: newMsg._id,
+                        conversationId,
+                        senderId,
+                        message: message.trim(),
+                        timestamp: newMsg.timestamp
+                    });
+                }
             } catch (err) {
-                console.error('customer_query save error:', err.message);
+                console.error('send_message save/encrypt error:', err.message);
                 socket.emit('message_sent', { status: 'error', detail: err.message });
             }
         });
 
-        socket.on('send_message', async (data) => {
-            const { senderId, receiverId, message, isFromAdmin } = data;
-            try {
-                const safeReceiverId = isFromAdmin ? receiverId : null;
-                const newMsg = await new Message({ senderId, receiverId: safeReceiverId, message }).save();
-                if (isFromAdmin) {
-                    supportIo.to(`customer_${receiverId}`).emit('receive_message', newMsg);
-                } else {
-                    supportIo.to('admin_pool').emit('receive_message', newMsg);
-                }
-            } catch (err) {
-                console.error('send_message save error:', err.message);
-            }
+        socket.on('disconnect', () => {
+            console.log(`Socket ${socket.id} disconnected from support channel`);
         });
     });
 

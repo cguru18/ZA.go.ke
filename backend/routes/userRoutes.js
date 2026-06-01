@@ -64,4 +64,32 @@ router.get('/transactions/download', protect, async (req, res) => {
     }
 });
 
+// GET /api/user/messages
+// Returns decrypted support message history for the authenticated user
+router.get('/messages', protect, async (req, res) => {
+    try {
+        const Message = require('../models/Message');
+        const cryptoHelper = require('../utils/cryptoHelper');
+        const conversationId = `conv_${req.user._id}`;
+
+        const messages = await Message.find({ conversationId }).sort({ timestamp: 1 });
+
+        const decryptedMessages = messages.map(m => {
+            const plainContent = cryptoHelper.decryptMessage(m.encryptedContent, m.iv, m.authTag);
+            return {
+                _id: m._id,
+                conversationId: m.conversationId,
+                senderId: m.senderId,
+                message: plainContent,
+                timestamp: m.timestamp
+            };
+        });
+
+        res.json({ success: true, messages: decryptedMessages });
+    } catch (error) {
+        console.error('User fetch messages error:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch message history' });
+    }
+});
+
 module.exports = router;

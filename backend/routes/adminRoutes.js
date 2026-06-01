@@ -307,4 +307,73 @@ router.post('/rotate-codes', async (req, res) => {
     }
 });
 
+// GET /api/admin/conversations
+// Retrieve unique conversation threads for the AdminChatConsole sidebar
+router.get('/conversations', async (req, res) => {
+    try {
+        const Message = require('../models/Message');
+        const cryptoHelper = require('../utils/cryptoHelper');
+
+        // Aggregation to find latest message per conversationId
+        const conversations = await Message.aggregate([
+            { $sort: { timestamp: -1 } },
+            {
+                $group: {
+                    _id: '$conversationId',
+                    lastMessage: { $first: '$$ROOT' }
+                }
+            },
+            { $sort: { 'lastMessage.timestamp': -1 } }
+        ]);
+
+        const populatedConversations = await Promise.all(conversations.map(async (c) => {
+            const lastMsg = c.lastMessage;
+            const decryptedContent = cryptoHelper.decryptMessage(
+                lastMsg.encryptedContent,
+                lastMsg.iv,
+                lastMsg.authTag
+            );
+            return {
+                conversationId: c._id,
+                lastMessage: decryptedContent,
+                timestamp: lastMsg.timestamp,
+                senderId: lastMsg.senderId
+            };
+        }));
+
+        res.json({ success: true, conversations: populatedConversations });
+    } catch (error) {
+        console.error('Fetch conversations error:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch conversations' });
+    }
+});
+
+// GET /api/admin/conversations/:id/messages
+// Returns decrypted message history for a specific conversationId
+router.get('/conversations/:id/messages', async (req, res) => {
+    try {
+        const Message = require('../models/Message');
+        const cryptoHelper = require('../utils/cryptoHelper');
+        const conversationId = req.params.id;
+
+        const messages = await Message.find({ conversationId }).sort({ timestamp: 1 });
+
+        const decryptedMessages = messages.map(m => {
+            const plainContent = cryptoHelper.decryptMessage(m.encryptedContent, m.iv, m.authTag);
+            return {
+                _id: m._id,
+                conversationId: m.conversationId,
+                senderId: m.senderId,
+                message: plainContent,
+                timestamp: m.timestamp
+            };
+        });
+
+        res.json({ success: true, messages: decryptedMessages });
+    } catch (error) {
+        console.error('Fetch conversation messages error:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch messages' });
+    }
+});
+
 module.exports = router;
