@@ -94,35 +94,34 @@ export default function AdminLogin() {
                 initial={{ opacity: 0, y: 28, scale: 0.96 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-                className="relative w-full max-w-md z-10"
+                className="relative w-full max-w-md z-10 stitch-theme"
             >
                 {/* Shield header */}
                 <div className="text-center mb-7">
                     <motion.div
                         animate={{ y: [0, -6, 0] }}
                         transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut' }}
-                        className="inline-flex items-center justify-center w-20 h-20 rounded-3xl mb-4 relative"
+                        className="inline-flex items-center justify-center w-20 h-20 rounded-lg mb-4 relative"
                         style={{
-                            background: 'linear-gradient(135deg,#800020,#c8a2c8)',
-                            boxShadow: '0 16px 40px rgba(128,0,32,0.4), 0 0 60px rgba(200,162,200,0.15)',
+                            background: 'linear-gradient(135deg,#25C2A0,#00e5ff)',
+                            boxShadow: '0 16px 40px rgba(37,194,160,0.25), 0 0 60px rgba(0,229,255,0.1)',
                         }}
                     >
-                        <Shield size={36} className="text-white" />
+                        <Shield size={36} className="text-[#00382c]" />
                         {/* spinning ring */}
-                        <div className="absolute inset-[-4px] rounded-3xl border-2 border-dashed animate-spin-slow"
-                            style={{ borderColor: 'rgba(200,162,200,0.3)' }} />
+                        <div className="absolute inset-[-4px] rounded-lg border border-dashed animate-spin-slow"
+                            style={{ borderColor: 'rgba(0,229,255,0.3)' }} />
                     </motion.div>
-                    <h1 className="text-3xl font-bold mb-1" style={{ color: textCol, fontFamily: 'Outfit, sans-serif' }}>
+                    <h1 className="text-2xl font-bold mb-1" style={{ color: textCol, fontFamily: 'Inter, sans-serif', letterSpacing: '-0.01em' }}>
                         Command Center
                     </h1>
-                    <p className="text-xs uppercase tracking-widest" style={{ color: labelCol }}>
+                    <p className="text-[10px] uppercase tracking-[0.1em] font-bold" style={{ color: '#bbcac3' }}>
                         ZA.go — Dual-Factor Secure Access
                     </p>
                 </div>
 
                 {/* Mode toggle */}
-                <div className="flex rounded-full p-1.5 mb-6"
-                    style={{ background: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)', border: `1px solid ${border}` }}>
+                <div className="flex rounded-md p-1 mb-6 border border-[#3c4a45] bg-[#0c0e11]">
                     {[
                         { key: 'login',  label: 'Admin Login',    icon: <LogIn size={14} /> },
                         { key: 'signup', label: 'Register Admin', icon: <UserPlus size={14} /> },
@@ -130,13 +129,12 @@ export default function AdminLogin() {
                         <button
                             key={key}
                             onClick={() => { setMode(key); setStatus(null); setGeneratedKey(null); }}
-                            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-full text-xs font-black uppercase tracking-[0.15em] transition-all duration-400"
+                            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-sm text-[10px] font-black uppercase tracking-[0.1em] transition-all duration-300"
                             style={{
-                                background: mode === key
-                                    ? 'linear-gradient(135deg,#800020,#c8a2c8)'
-                                    : 'transparent',
-                                color: mode === key ? '#fff' : labelCol,
-                                boxShadow: mode === key ? '0 10px 20px rgba(128,0,32,0.3)' : 'none',
+                                background: mode === key ? '#25C2A0' : 'transparent',
+                                color: mode === key ? '#00382c' : '#bbcac3',
+                                boxShadow: mode === key ? '0 0 10px rgba(37,194,160,0.2)' : 'none',
+                                borderRadius: '4px'
                             }}
                         >
                             {icon} {label}
@@ -145,12 +143,11 @@ export default function AdminLogin() {
                 </div>
 
                 {/* Card */}
-                <div className="p-8 rounded-3xl relative overflow-hidden"
-                    style={{ background: surface, border: `1px solid ${border}`, boxShadow: isDarkMode ? '0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(200,162,200,0.08)' : '0 24px 60px rgba(0,0,0,0.12)' }}>
+                <div className="p-8 rounded-lg relative overflow-hidden border border-[#3c4a45] bg-[#111316] shadow-2xl">
 
                     {/* Orb decoration inside card */}
-                    <div className="absolute -top-12 -right-12 w-40 h-40 rounded-full opacity-15 pointer-events-none"
-                        style={{ background: 'radial-gradient(circle, rgba(200,162,200,0.6), transparent 70%)' }} />
+                    <div className="absolute -top-12 -right-12 w-40 h-40 rounded-full opacity-5 pointer-events-none"
+                        style={{ background: 'radial-gradient(circle, rgba(0,229,255,0.4), transparent 70%)' }} />
 
                     {/* Status banner */}
                     <AnimatePresence>
@@ -159,11 +156,11 @@ export default function AdminLogin() {
                                 initial={{ opacity: 0, y: -8 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0 }}
-                                className="mb-5 p-3.5 rounded-2xl text-sm font-semibold flex items-center gap-2.5"
+                                className="mb-5 p-3 rounded-sm text-xs font-semibold flex items-center gap-2.5 font-mono"
                                 style={{
-                                    background: status.type === 'error' ? 'rgba(239,68,68,0.1)' : 'rgba(0,168,107,0.1)',
-                                    border: status.type === 'error' ? '1px solid rgba(239,68,68,0.25)' : '1px solid rgba(0,168,107,0.25)',
-                                    color: status.type === 'error' ? '#f87171' : '#34d399',
+                                    background: status.type === 'error' ? 'rgba(239,68,68,0.1)' : 'rgba(37,194,160,0.1)',
+                                    border: status.type === 'error' ? '1px solid rgba(239,68,68,0.25)' : '1px solid rgba(37,194,160,0.25)',
+                                    color: status.type === 'error' ? '#f87171' : '#4fdebb',
                                 }}
                             >
                                 {status.type === 'error' ? <AlertTriangle size={15} /> : <CheckCheck size={15} />}
@@ -178,24 +175,24 @@ export default function AdminLogin() {
                             <motion.div
                                 initial={{ opacity: 0, y: -8 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="mb-5 p-4 rounded-2xl"
+                                className="mb-5 p-4 rounded-sm"
                                 style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.3)' }}
                             >
-                                <p className="text-amber-400 text-xs font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
+                                <p className="text-amber-400 text-xs font-bold uppercase tracking-widest mb-3 flex items-center gap-2 font-mono">
                                     <Key size={13} /> Your Encryption Key — Save It Now!
                                 </p>
                                 <div className="flex items-center gap-2">
-                                    <p className="font-mono text-amber-300 text-xs break-all flex-1 p-2.5 rounded-xl"
+                                    <p className="font-mono text-amber-300 text-xs break-all flex-1 p-2.5 rounded-sm"
                                         style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(245,158,11,0.2)' }}>
                                         {generatedKey}
                                     </p>
                                     <button onClick={handleCopy}
-                                        className="p-2.5 rounded-xl transition-all flex-shrink-0"
+                                        className="p-2.5 rounded-sm transition-all flex-shrink-0"
                                         style={{ background: copied ? 'rgba(0,168,107,0.2)' : 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', color: copied ? '#34d399' : '#f59e0b' }}>
                                         {copied ? <CheckCheck size={16} /> : <Copy size={16} />}
                                     </button>
                                 </div>
-                                <p className="text-amber-600/70 text-[10px] mt-2 italic">
+                                <p className="text-amber-600/70 text-[10px] mt-2 italic font-mono">
                                     This key will NEVER be shown again. Store it securely.
                                 </p>
                             </motion.div>
@@ -207,26 +204,26 @@ export default function AdminLogin() {
                         <AnimatePresence>
                             {mode === 'signup' && (
                                 <motion.div key="fullName" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
-                                    <label className="block text-xs font-bold uppercase tracking-widest mb-2" style={{ color: labelCol }}>Full Name</label>
-                                    <input name="fullName" type="text" placeholder="Jane Doe" value={form.fullName} onChange={handleChange} style={inputStyle} required />
+                                    <label className="block label-caps mb-2">Full Name</label>
+                                    <input name="fullName" type="text" placeholder="Jane Doe" value={form.fullName} onChange={handleChange} className="input-technical w-full" required />
                                 </motion.div>
                             )}
                         </AnimatePresence>
 
                         {/* Email */}
                         <div>
-                            <label className="block text-xs font-bold uppercase tracking-widest mb-2" style={{ color: labelCol }}>Email Address</label>
-                            <input name="email" type="email" placeholder="admin@za.go.ke" value={form.email} onChange={handleChange} style={inputStyle} required />
+                            <label className="block label-caps mb-2">Email Address</label>
+                            <input name="email" type="email" placeholder="admin@za.go.ke" value={form.email} onChange={handleChange} className="input-technical w-full" required />
                         </div>
 
                         {/* Password */}
-                        <PasswordInput name="password" label="Password" value={form.password} onChange={handleChange} placeholder="••••••••••••" required />
+                        <PasswordInput name="password" label="Password" value={form.password} onChange={handleChange} placeholder="••••••••••••" inputClassName="input-technical" required />
 
                         {/* Login-only: AES key */}
                         <AnimatePresence>
                             {mode === 'login' && (
                                 <motion.div key="encKey" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
-                                    <PasswordInput name="encryptionKey" label="AES-256 Encryption Key" value={form.encryptionKey} onChange={handleChange} placeholder="Your 64-character hex key" inputClassName="font-mono text-sm" required />
+                                    <PasswordInput name="encryptionKey" label="AES-256 Encryption Key" value={form.encryptionKey} onChange={handleChange} placeholder="Your 64-character hex key" inputClassName="input-technical font-mono text-sm" required />
                                 </motion.div>
                             )}
                         </AnimatePresence>
@@ -235,36 +232,26 @@ export default function AdminLogin() {
                         <AnimatePresence>
                             {mode === 'signup' && (
                                 <motion.div key="masterPw" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
-                                    <PasswordInput name="masterPassword" label="Master Password" value={form.masterPassword} onChange={handleChange} placeholder="Provided by system owner" required />
+                                    <PasswordInput name="masterPassword" label="Master Password" value={form.masterPassword} onChange={handleChange} placeholder="Provided by system owner" inputClassName="input-technical" required />
                                 </motion.div>
                             )}
                         </AnimatePresence>
 
                         {/* Submit */}
-                        <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
+                        <button
                             type="submit"
                             disabled={isLoading}
-                            className="mt-4 w-full py-4 rounded-full font-black tracking-[0.2em] uppercase text-white flex items-center justify-center gap-3 transition-all duration-500 disabled:opacity-60 disabled:cursor-not-allowed relative overflow-hidden"
-                            style={{
-                                background: isLoading
-                                    ? 'rgba(128,0,32,0.4)'
-                                    : 'linear-gradient(135deg,#800020 0%,#a0002a 50%,#c8a2c8 100%)',
-                                boxShadow: isLoading ? 'none' : '0 12px 30px rgba(128,0,32,0.5), 0 0 0 1px rgba(200,162,200,0.15)',
-                            }}
+                            className="mt-4 w-full btn-stitch-primary py-4 text-xs font-bold font-mono tracking-widest uppercase text-[#00382c]"
                         >
-                            {/* shimmer sweep */}
-                            {!isLoading && <span className="absolute inset-0 btn-shimmer pointer-events-none" />}
                             {isLoading
-                                ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                : <><Lock size={18} /> {mode === 'login' ? 'Authenticate' : 'Secure Register'}</>
+                                ? <span className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                                : <><Lock size={14} /> {mode === 'login' ? 'Authenticate' : 'Secure Register'}</>
                             }
-                        </motion.button>
+                        </button>
                     </form>
                 </div>
 
-                <p className="text-center text-[11px] mt-5" style={{ color: labelCol }}>
+                <p className="text-center font-mono text-[10px] mt-5" style={{ color: '#bbcac3' }}>
                     Dual-Factor Authentication · ZA.go Security Protocol v2.0
                 </p>
             </motion.div>

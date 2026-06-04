@@ -179,7 +179,7 @@ export default function UserChatbox() {
     if (!user) return null;
 
     return (
-        <div className="fixed bottom-6 right-6 z-50">
+        <div className="fixed bottom-6 right-6 z-50 stitch-theme">
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
@@ -187,42 +187,43 @@ export default function UserChatbox() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 20, scale: 0.95 }}
                         transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                        className={`mb-4 w-80 sm:w-96 h-[28rem] rounded-3xl shadow-2xl flex flex-col overflow-hidden border ${
+                        className={`mb-4 w-80 sm:w-96 h-[28rem] rounded-lg shadow-2xl flex flex-col overflow-hidden border ${
                             isDarkMode
-                                ? 'bg-[#0a0a0a]/90 border-fuchsia-500/20 backdrop-blur-2xl shadow-fuchsia-900/20 text-white'
-                                : 'bg-white/90 border-gray-200/50 backdrop-blur-2xl shadow-gray-200/50 text-slate-800'
+                                ? 'bg-[#111316] border-[#3c4a45] text-[#e2e2e6] shadow-black/80'
+                                : 'bg-white border-gray-200 text-slate-800'
                         }`}
                     >
                         {/* Header */}
-                        <div className="relative bg-gradient-to-r from-fuchsia-600 to-purple-600 p-4 flex justify-between items-center text-white overflow-hidden flex-shrink-0">
-                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30 mix-blend-overlay"></div>
-                            <div className="relative z-10 flex items-center gap-3">
+                        <div className={`p-4 flex justify-between items-center border-b flex-shrink-0 ${
+                            isDarkMode ? 'bg-[#1e2023] border-[#3c4a45] text-white' : 'bg-gray-100 border-gray-200 text-slate-800'
+                        }`}>
+                            <div className="flex items-center gap-3">
                                 {/* Admin Avatar */}
                                 <div className="relative shrink-0">
                                     <img 
                                         src={adminInfo.avatar} 
                                         alt={adminInfo.fullName} 
-                                        className="w-10 h-10 rounded-full object-cover border border-white/20"
+                                        className="w-10 h-10 rounded-full object-cover border border-[#85948e]"
                                     />
                                     <span className="absolute bottom-0 right-0 flex h-2.5 w-2.5">
                                         {adminInfo.status === 'online' ? (
                                             <>
-                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500 border border-white"></span>
+                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00e5ff] opacity-75"></span>
+                                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#00e5ff] border border-[#111316]"></span>
                                             </>
                                         ) : (
-                                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-gray-400 border border-white"></span>
+                                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-gray-500 border border-[#111316]"></span>
                                         )}
                                     </span>
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-sm tracking-wide leading-tight">{adminInfo.fullName}</h3>
-                                    <p className="text-[10px] text-fuchsia-100 font-medium">
+                                    <h3 className="font-bold text-xs font-mono text-[#4fdebb]">{adminInfo.fullName}</h3>
+                                    <p className="text-[10px] text-gray-400 font-semibold label-caps mt-0.5">
                                         {adminInfo.status === 'online' ? 'Online' : formatLastSeen(adminInfo.lastSeen)}
                                     </p>
                                 </div>
                             </div>
-                            <button onClick={() => setIsOpen(false)} className="relative z-10 hover:bg-white/20 p-1.5 rounded-full transition-all">
+                            <button onClick={() => setIsOpen(false)} className={`hover:bg-white/10 p-1.5 rounded-full transition-all ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-black'}`}>
                                 <X size={16} />
                             </button>
                         </div>
@@ -236,11 +237,11 @@ export default function UserChatbox() {
                             </div>
                             
                             <div className="flex justify-start">
-                                <div className={`max-w-[85%] p-3 rounded-2xl rounded-tl-sm text-xs shadow-sm ${
-                                    isDarkMode ? 'bg-white/10 text-gray-100' : 'bg-white text-gray-800 border border-gray-100'
+                                <div className={`max-w-[85%] p-3 rounded-[4px] rounded-tl-sm text-xs shadow-sm ${
+                                    isDarkMode ? 'bg-[#1e2023] border border-[#3c4a45] text-gray-100' : 'bg-white text-gray-800 border border-gray-100'
                                 }`}>
-                                    <div className="flex gap-1.5 items-center mb-1 text-fuchsia-500">
-                                        <Sparkles size={12} /> <span className="text-[10px] font-bold">VIP Virtual Assistant</span>
+                                    <div className="flex gap-1.5 items-center mb-1 text-[#00e5ff]">
+                                        <Sparkles size={12} /> <span className="text-[10px] font-bold uppercase tracking-wider font-mono">VIP Virtual Assistant</span>
                                     </div>
                                     Hello {user.fullName.split(' ')[0]}! This connection is encrypted. Send a message to contact our active support agents.
                                 </div>
@@ -255,10 +256,10 @@ export default function UserChatbox() {
                                         key={msg._id || idx}
                                         className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
                                     >
-                                        <div className={`max-w-[85%] p-3 rounded-2xl text-xs shadow-sm ${
+                                        <div className={`max-w-[85%] p-3 rounded-[4px] text-xs shadow-sm ${
                                             isMe
-                                                ? 'bg-gradient-to-br from-fuchsia-600 to-purple-600 text-white rounded-tr-sm'
-                                                : `rounded-tl-sm ${isDarkMode ? 'bg-white/10 text-gray-100' : 'bg-white text-gray-800 border border-gray-100'}`
+                                                ? 'bg-[#25C2A0]/20 text-[#4fdebb] border border-[#25C2A0]/30 rounded-tr-none font-mono'
+                                                : `rounded-tl-none ${isDarkMode ? 'bg-[#1e2023] border border-[#3c4a45] text-gray-100' : 'bg-white text-gray-800 border border-gray-100'}`
                                         }`}
                                             // Safely render sanitized message string
                                             dangerouslySetInnerHTML={{ __html: msg.message }}
@@ -272,9 +273,9 @@ export default function UserChatbox() {
                         {/* Typing status indicator element */}
                         {isAdminTyping && (
                             <div className={`px-4 py-2 flex items-center gap-1.5 text-[11px] font-semibold tracking-wide border-t flex-shrink-0 ${
-                                isDarkMode ? 'bg-[#0a0a0a]/90 border-white/5 text-fuchsia-400' : 'bg-white border-gray-100 text-fuchsia-600'
+                                isDarkMode ? 'bg-[#111316] border-[#3c4a45] text-[#00e5ff]' : 'bg-white border-gray-100 text-[#00616d]'
                             }`}>
-                                <div className="flex gap-1 items-center">
+                                <div className="flex gap-1 items-center font-mono">
                                     <span>{adminInfo.fullName} is typing</span>
                                     <span className="flex gap-0.5">
                                         <span className="w-1 h-1 rounded-full bg-current animate-bounce" style={{ animationDelay: '0ms' }}></span>
@@ -286,24 +287,24 @@ export default function UserChatbox() {
                         )}
 
                         {/* Input Form */}
-                        <form onSubmit={handleSend} className={`p-3 flex gap-2 items-center flex-shrink-0 ${isDarkMode ? 'bg-black/40 border-t border-white/5' : 'bg-white border-t border-gray-100'}`}>
-                            <div className={`flex-1 flex items-center rounded-2xl overflow-hidden transition-colors ${
-                                isDarkMode ? 'bg-white/5 focus-within:bg-white/10' : 'bg-gray-100 focus-within:bg-gray-200/50'
+                        <form onSubmit={handleSend} className={`p-3 flex gap-2 items-center flex-shrink-0 ${isDarkMode ? 'bg-black/40 border-t border-[#3c4a45]' : 'bg-white border-t border-gray-100'}`}>
+                            <div className={`flex-1 flex items-center rounded-[4px] overflow-hidden transition-colors ${
+                                isDarkMode ? 'bg-[#1a1c1f] border border-[#3c4a45] focus-within:border-[#00e5ff]' : 'bg-gray-100 focus-within:bg-gray-200/50'
                              }`}>
                                 <input
                                     type="text"
                                     placeholder="Type encrypted message..."
                                     value={input}
                                     onChange={handleInputChange}
-                                    className="w-full bg-transparent p-3 text-xs outline-none placeholder:text-gray-400"
+                                    className="w-full bg-transparent p-3 text-xs outline-none placeholder:text-gray-500 font-mono text-[#e2e2e6]"
                                 />
                             </div>
                             <button
                                 type="submit"
                                 disabled={!input.trim()}
-                                className={`p-3 rounded-2xl flex items-center justify-center transition-all ${
+                                className={`p-3 rounded-[4px] flex items-center justify-center transition-all ${
                                     input.trim()
-                                        ? 'bg-fuchsia-600 text-white hover:bg-fuchsia-500 shadow-lg shadow-fuchsia-500/30 hover:scale-105'
+                                        ? 'bg-[#25C2A0] text-[#00382c] hover:bg-[#4fdebb] shadow-lg shadow-[#25C2A0]/20 hover:scale-105'
                                         : `bg-transparent ${isDarkMode ? 'text-gray-600' : 'text-gray-300'}`
                                 }`}
                             >
@@ -324,13 +325,13 @@ export default function UserChatbox() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setIsOpen(true)}
-                        className="w-14 h-14 bg-gradient-to-br from-fuchsia-500 to-purple-600 text-white rounded-full shadow-2xl shadow-fuchsia-500/40 flex items-center justify-center relative group"
+                        className="w-14 h-14 bg-gradient-to-br from-[#25C2A0] to-[#00e5ff] text-[#00382c] rounded-full shadow-2xl shadow-[#25C2A0]/30 flex items-center justify-center relative group border border-[#25C2A0]/20"
                     >
                         <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
                         <MessageCircle size={26} className="relative z-10" />
                         <span className="absolute top-0 right-0 flex h-3 w-3">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-jade opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-3 w-3 bg-jade border-2 border-[#0a0a0a]"></span>
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00e5ff] opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-3 w-3 bg-[#00e5ff] border border-[#0a0a0a]"></span>
                         </span>
                     </motion.button>
                 )}

@@ -30,25 +30,33 @@ const MapCenterUpdater = ({ lat, lng }) => {
 
 export default function MapTracker({ lat, lng, eta, status, message }) {
   return (
-    <div className="w-full h-96 bg-gray-200 dark:bg-black/40 rounded-xl border border-gray-300 dark:border-white/10 relative overflow-hidden shadow-2xl">
-      <div className="absolute top-4 left-4 z-[1000] bg-white/90 dark:bg-black/90 backdrop-blur-md p-4 rounded-xl border border-gray-200 dark:border-white/10 shadow-lg min-w-[200px]">
-        <h4 className="text-xs font-bold uppercase tracking-widest text-burgundy-500 mb-2">Live Tracking</h4>
-        <div className="text-sm dark:text-gray-200 space-y-1">
-          <p className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">Status:</span> 
-            <span className="font-bold text-jade-500">{status}</span>
-          </p>
-          <p className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">ETA:</span> 
-            <span className="font-bold">{eta ? `${eta} mins` : 'Calculating...'}</span>
-          </p>
-        </div>
-        {message && (
-          <div className="mt-3 p-2 bg-red-500/20 text-red-500 text-xs rounded border border-red-500/30 animate-pulse">
-            {message}
+    <div className="stitch-theme w-full h-full">
+      <div className="w-full h-96 bg-[#0c0e11] rounded-lg border border-white/10 relative overflow-hidden shadow-2xl">
+        <div className="absolute top-4 left-4 z-[1000] bg-[#1a1c1f]/90 backdrop-blur-md p-4 rounded-lg border border-white/10 shadow-lg min-w-[220px]">
+          <h4 className="text-xs font-bold uppercase tracking-widest text-[#bbcac3] mb-2 label-caps">Courier Telemetry</h4>
+          <div className="text-sm space-y-2">
+            <p className="flex justify-between items-center">
+              <span className="text-[#bbcac3]">Status:</span> 
+              <span className="font-bold flex items-center gap-1.5 text-[#25C2A0] text-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#25C2A0] animate-pulse"></span>
+                {status}
+              </span>
+            </p>
+            <p className="flex justify-between items-center">
+              <span className="text-[#bbcac3]">ETA:</span> 
+              <span className="font-bold text-[#00E5FF] telemetry">{eta ? `${eta} mins` : 'Calculating...'}</span>
+            </p>
+            <p className="flex justify-between items-center text-xs">
+              <span className="text-[#bbcac3]">Coords:</span>
+              <span className="text-[#00E5FF] telemetry">{lat.toFixed(4)}, {lng.toFixed(4)}</span>
+            </p>
           </div>
-        )}
-      </div>
+          {message && (
+            <div className="mt-3 p-2 bg-red-500/10 text-red-400 text-xs rounded border border-red-500/30 animate-pulse font-mono telemetry">
+              {message}
+            </div>
+          )}
+        </div>
 
       <MapContainer 
         center={[lat, lng]} 
@@ -76,6 +84,7 @@ export default function MapTracker({ lat, lng, eta, status, message }) {
           <Popup>Delivery Destination</Popup>
         </Marker>
       </MapContainer>
+      </div>
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import TrackingIcon from '../components/TrackingIcon';
 import MapTracker from '../components/MapTracker';
+import ProductFeedGrid from '../components/Products/ProductFeedGrid';
 
 /* ─── Color map for product accent theming ────────────────────────────────── */
 const ACCENT_MAP = {
@@ -529,19 +530,13 @@ export default function Home() {
                     <p className="text-sm text-gray-700 mt-1">Try a different search or unlock the premium menu</p>
                 </motion.div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                    {filteredProducts.map((product, i) => (
-                        <ProductCard
-                            key={product._id}
-                            product={product}
-                            onAddToCart={addToCart}
-                            index={i}
-                            user={user}
-                            onToggleStock={handleToggleStock}
-                            onNotify={handleNotify}
-                        />
-                    ))}
-                </div>
+                <ProductFeedGrid
+                    products={filteredProducts}
+                    onAddToCart={addToCart}
+                    user={user}
+                    onToggleStock={handleToggleStock}
+                    onNotify={handleNotify}
+                />
             )}
 
             {/* ── Map Tracking Modal ─────────────────────────────────────── */}

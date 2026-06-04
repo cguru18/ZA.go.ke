@@ -43,7 +43,7 @@ export default function MapboxMap({
   center = [36.8219, -1.2921], // [longitude, latitude] - Nairobi, Kenya
   zoom = 12, 
   styleUrl = 'mapbox://styles/mapbox/streets-v12',
-  className = "w-full h-full min-h-[500px] rounded-2xl border border-jade-500/20 shadow-2xl",
+  className = "w-full h-full min-h-[500px] rounded-lg border border-white/10 shadow-2xl",
   markers = [] 
 }) {
   const mapContainerRef = useRef(null);
@@ -120,9 +120,9 @@ export default function MapboxMap({
   }, [markers, mapInitialized]);
 
   return (
-    <div className="relative w-full h-full">
+    <div className="stitch-theme w-full h-full relative">
       {!hasValidToken && (
-        <div className="absolute top-2 left-2 z-10 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-yellow-500/30 text-yellow-500 text-[10px] font-bold tracking-wider uppercase shadow-md">
+        <div className="absolute top-2 left-2 z-10 bg-[#1a1c1f]/90 backdrop-blur-md px-3 py-1.5 rounded border border-white/10 text-[#00E5FF] text-[9px] font-bold tracking-wider uppercase shadow-md label-caps">
           ⚠️ Token Missing - OSM Raster Tile Workaround Active
         </div>
       )}

@@ -218,18 +218,18 @@ export default function AdminChatConsole({ initialConversationId = null }) {
     }
 
     const containerStyle = {
-        background: isDarkMode ? 'rgba(10,10,20,0.85)' : '#fff',
-        border: isDarkMode ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)',
+        background: isDarkMode ? '#111316' : '#fff',
+        border: isDarkMode ? '1px solid #3c4a45' : '1px solid rgba(0,0,0,0.06)',
         boxShadow: isDarkMode ? '0 24px 60px rgba(0,0,0,0.5)' : '0 12px 30px rgba(0,0,0,0.08)'
     };
 
     return (
-        <div className="rounded-3xl overflow-hidden flex h-[35rem] w-full" style={containerStyle}>
+        <div className="rounded-lg overflow-hidden flex h-[35rem] w-full stitch-theme" style={containerStyle}>
             {/* Sidebar: Conversation Threads */}
-            <div className={`w-80 flex flex-col border-r ${isDarkMode ? 'border-white/5 bg-black/10' : 'border-gray-100 bg-gray-50/50'}`}>
-                <div className="p-4 border-b border-white/5 flex items-center gap-2">
-                    <Users size={16} className="text-fuchsia-500" />
-                    <h3 className="font-bold text-sm text-gray-400 uppercase tracking-wider">Support Queue</h3>
+            <div className={`w-80 flex flex-col border-r ${isDarkMode ? 'border-[#3c4a45] bg-[#0c0e11]' : 'border-gray-100 bg-gray-50/50'}`}>
+                <div className={`p-4 border-b flex items-center gap-2 ${isDarkMode ? 'border-[#3c4a45]' : 'border-gray-200'}`}>
+                    <Users size={16} className="text-[#25C2A0]" />
+                    <h3 className="font-bold text-xs text-gray-400 label-caps">Support Queue</h3>
                 </div>
                 <div className="flex-1 overflow-y-auto p-2 space-y-1">
                     {conversations.length === 0 ? (
@@ -243,9 +243,9 @@ export default function AdminChatConsole({ initialConversationId = null }) {
                                 <button
                                     key={c.conversationId}
                                     onClick={() => selectConversation(c.conversationId)}
-                                    className={`w-full p-3.5 rounded-2xl text-left flex items-start gap-3 transition-all relative border ${
+                                    className={`w-full p-3 rounded-md text-left flex items-start gap-3 transition-all relative border ${
                                         isActive 
-                                            ? 'bg-gradient-to-r from-fuchsia-600/20 to-purple-600/20 border border-fuchsia-500/30' 
+                                            ? 'bg-[#25C2A0]/10 border-[#25C2A0]/30 text-white' 
                                             : `border-transparent ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-black/5'}`
                                     }`}
                                 >
@@ -254,7 +254,7 @@ export default function AdminChatConsole({ initialConversationId = null }) {
                                         <img 
                                             src={c.userProfile?.profilePictureUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150'} 
                                             alt={c.userProfile?.fullName || 'User'} 
-                                            className="w-10 h-10 rounded-full object-cover border border-white/10"
+                                            className="w-10 h-10 rounded-full object-cover border border-[#85948e]"
                                         />
                                         {c.userProfile?.tier === 'VIP' && (
                                             <span className="absolute -top-1 -right-1 flex h-4 w-4 rounded-full bg-amber-500 border border-[#0a0a0a] items-center justify-center text-[8px] font-black text-black">V</span>
@@ -267,7 +267,7 @@ export default function AdminChatConsole({ initialConversationId = null }) {
                                             <span className="font-bold text-xs text-white truncate">
                                                 {c.userProfile?.fullName || c.conversationId.replace('conv_', 'User ')}
                                             </span>
-                                            <span className="text-[8px] text-gray-500 whitespace-nowrap">
+                                            <span className="text-[8px] text-gray-500 whitespace-nowrap font-mono">
                                                 {new Date(c.lastMessageTimestamp || c.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </span>
                                         </div>
@@ -278,7 +278,7 @@ export default function AdminChatConsole({ initialConversationId = null }) {
                                             <span className={`px-2 py-0.5 rounded-full text-[8px] font-bold tracking-wider uppercase ${
                                                 c.userProfile.tier === 'VIP'
                                                     ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                                                    : 'bg-jade/10 text-jade border border-jade/20'
+                                                    : 'bg-[#25C2A0]/10 text-[#4fdebb] border border-[#25C2A0]/20'
                                             }`}>
                                                 {c.userProfile.tier}
                                             </span>
@@ -287,7 +287,7 @@ export default function AdminChatConsole({ initialConversationId = null }) {
 
                                     {/* Unread Counter Badge */}
                                     {c.unreadCount > 0 && (
-                                        <span className="absolute top-3.5 right-3 px-1.5 py-0.5 rounded-full text-[9px] font-black bg-fuchsia-600 text-white shadow-lg animate-pulse">
+                                        <span className="absolute top-3.5 right-3 px-1.5 py-0.5 rounded-full text-[9px] font-black bg-[#00e5ff] text-[#001f24] shadow-lg animate-pulse">
                                             {c.unreadCount}
                                         </span>
                                     )}
@@ -306,31 +306,31 @@ export default function AdminChatConsole({ initialConversationId = null }) {
                         {(() => {
                             const activeConv = conversations.find(c => c.conversationId === activeChat);
                             return (
-                                <div className="p-4 border-b border-white/5 flex justify-between items-center bg-black/10 flex-shrink-0">
+                                <div className={`p-4 border-b flex justify-between items-center flex-shrink-0 ${isDarkMode ? 'bg-[#1a1c1f] border-[#3c4a45]' : 'bg-black/5'}`}>
                                     <div className="flex items-center gap-3">
                                         <img 
                                             src={activeConv?.userProfile?.profilePictureUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150'} 
                                             alt="User Profile" 
-                                            className="w-10 h-10 rounded-full object-cover border border-white/10"
+                                            className="w-10 h-10 rounded-full object-cover border border-[#85948e]"
                                         />
                                         <div>
                                             <h4 className="font-bold text-sm text-white flex items-center gap-2">
                                                 {activeConv?.userProfile?.fullName || 'Active Session'}
                                                 {activeConv?.userProfile && (
                                                     <span className={`px-1.5 py-0.5 rounded text-[8px] font-black ${
-                                                        activeConv.userProfile.tier === 'VIP' ? 'bg-amber-500/20 text-amber-400' : 'bg-jade/20 text-jade'
+                                                        activeConv.userProfile.tier === 'VIP' ? 'bg-[#25C2A0]/20 text-[#4fdebb]' : 'bg-[#00e3fd]/20 text-[#bdf4ff]'
                                                     }`}>
                                                         {activeConv.userProfile.tier}
                                                     </span>
                                                 )}
                                             </h4>
-                                            <p className="text-[9px] text-gray-500">
+                                            <p className="text-[9px] text-gray-500 font-mono">
                                                 {activeConv?.userProfile?.email || activeChat.replace('conv_', '')}
                                             </p>
                                         </div>
                                     </div>
                                     <div>
-                                        <p className="text-[10px] text-fuchsia-400 flex items-center gap-1">
+                                        <p className="text-[10px] text-[#00e5ff] flex items-center gap-1 font-mono">
                                             <Sparkles size={10} /> Secure Tunnel
                                         </p>
                                     </div>
@@ -349,10 +349,10 @@ export default function AdminChatConsole({ initialConversationId = null }) {
                                         className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
                                     >
                                         <div
-                                            className={`max-w-[70%] p-3.5 rounded-2xl text-xs shadow-sm ${
+                                            className={`max-w-[70%] p-3.5 rounded-[4px] text-xs shadow-sm ${
                                                 isMe
-                                                    ? 'bg-gradient-to-br from-fuchsia-600 to-purple-600 text-white rounded-tr-sm'
-                                                    : `rounded-tl-sm ${isDarkMode ? 'bg-white/10 text-gray-100' : 'bg-white text-gray-800 border border-gray-100'}`
+                                                    ? 'bg-[#25C2A0]/20 text-[#4fdebb] border border-[#25C2A0]/30 rounded-tr-none font-mono'
+                                                    : `rounded-tl-none ${isDarkMode ? 'bg-[#1e2023] border border-[#3c4a45] text-gray-100' : 'bg-white text-gray-800 border border-gray-100'}`
                                             }`}
                                             dangerouslySetInnerHTML={{ __html: msg.message }}
                                         />
@@ -365,9 +365,9 @@ export default function AdminChatConsole({ initialConversationId = null }) {
                         {/* Customer Typing status indicator */}
                         {isCustomerTyping && (
                             <div className={`px-5 py-2 flex items-center gap-1.5 text-[11px] font-semibold tracking-wide border-t flex-shrink-0 ${
-                                isDarkMode ? 'bg-[#0a0a20]/20 border-white/5 text-fuchsia-400' : 'bg-gray-50 border-gray-100 text-fuchsia-600'
+                                isDarkMode ? 'bg-[#111316] border-[#3c4a45] text-[#00e5ff]' : 'bg-gray-50 border-gray-100 text-[#00616d]'
                             }`}>
-                                <div className="flex gap-1 items-center">
+                                <div className="flex gap-1 items-center font-mono">
                                     <span>Customer is typing</span>
                                     <span className="flex gap-0.5">
                                         <span className="w-1 h-1 rounded-full bg-current animate-bounce" style={{ animationDelay: '0ms' }}></span>
@@ -379,24 +379,24 @@ export default function AdminChatConsole({ initialConversationId = null }) {
                         )}
 
                         {/* Input Area */}
-                        <form onSubmit={handleSend} className={`p-4 flex gap-2 items-center flex-shrink-0 ${isDarkMode ? 'bg-black/40 border-t border-white/5' : 'bg-white border-t border-gray-100'}`}>
-                            <div className={`flex-1 flex items-center rounded-2xl overflow-hidden transition-colors ${
-                                isDarkMode ? 'bg-white/5 focus-within:bg-white/10' : 'bg-gray-100 focus-within:bg-gray-200/50'
+                        <form onSubmit={handleSend} className={`p-4 flex gap-2 items-center flex-shrink-0 ${isDarkMode ? 'bg-black/40 border-t border-[#3c4a45]' : 'bg-white border-t border-gray-100'}`}>
+                            <div className={`flex-1 flex items-center rounded-[4px] overflow-hidden transition-colors ${
+                                isDarkMode ? 'bg-[#1a1c1f] border border-[#3c4a45] focus-within:border-[#00e5ff]' : 'bg-gray-100 focus-within:bg-gray-200/50'
                              }`}>
                                 <input
                                     type="text"
                                     placeholder="Enter encrypted support response..."
                                     value={input}
                                     onChange={handleInputChange}
-                                    className={`w-full bg-transparent p-3.5 text-xs outline-none placeholder:text-gray-400 ${isDarkMode ? 'text-white' : 'text-slate-800'}`}
+                                    className={`w-full bg-transparent p-3.5 text-xs outline-none placeholder:text-gray-500 font-mono ${isDarkMode ? 'text-white' : 'text-slate-800'}`}
                                 />
                             </div>
                             <button
                                 type="submit"
                                 disabled={!input.trim()}
-                                className={`p-3.5 rounded-2xl flex items-center justify-center transition-all ${
+                                className={`p-3 rounded-[4px] flex items-center justify-center transition-all ${
                                     input.trim()
-                                        ? 'bg-fuchsia-600 text-white hover:bg-fuchsia-500 shadow-lg shadow-fuchsia-500/30'
+                                        ? 'bg-[#25C2A0] text-[#00382c] hover:bg-[#4fdebb] shadow-lg shadow-[#25C2A0]/20'
                                         : `bg-transparent ${isDarkMode ? 'text-gray-600' : 'text-gray-300'}`
                                 }`}
                             >
@@ -406,8 +406,8 @@ export default function AdminChatConsole({ initialConversationId = null }) {
                     </>
                 ) : (
                     <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-gray-500 gap-3">
-                        <MessageSquare size={48} className="opacity-20 text-fuchsia-500 mb-2" />
-                        <h4 className="text-base font-bold text-gray-400">Support Console Empty</h4>
+                        <MessageSquare size={48} className="opacity-20 text-[#25C2A0] mb-2" />
+                        <h4 className="text-base font-bold text-gray-400 label-caps">Support Console Empty</h4>
                         <p className="text-xs max-w-xs leading-relaxed">Select a conversation thread in the left sidebar to open an encrypted messaging tunnel.</p>
                     </div>
                 )}
