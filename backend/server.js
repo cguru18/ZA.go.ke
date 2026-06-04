@@ -28,12 +28,41 @@ if (cluster.isMaster) {
     console.log(`║  Workers:     ${String(numCPUs).padEnd(35)}║`);
     console.log(`╚═══════════════════════════════════════════════════╝`);
 
-    for (let i = 0; i < numCPUs; i++) cluster.fork();
+    const forkWorker = () => {
+        const worker = cluster.fork();
+        worker.on('message', (msg) => {
+            if (msg && msg.type === 'shutdown') {
+                console.log(`[MASTER] Resilient shutdown request received from worker ${worker.process.pid}. Halting auto-respawn and terminating children...`);
+                cluster.isShuttingDown = true;
+                
+                // Graceful kill signal to all active workers
+                for (const id in cluster.workers) {
+                    if (cluster.workers[id]) {
+                        try {
+                            console.log(`[MASTER] Terminating worker process ${cluster.workers[id].process.pid}...`);
+                            process.kill(cluster.workers[id].process.pid, 'SIGTERM');
+                        } catch (err) {
+                            console.error(`[MASTER] Failed to kill worker ${id}:`, err.message);
+                        }
+                    }
+                }
+                
+                // Allow child pools to drain, then terminate master with status 1
+                setTimeout(() => {
+                    console.log('[MASTER] Master process exiting with code 1 to trigger container recovery.');
+                    process.exit(1);
+                }, 1000);
+            }
+        });
+    };
+
+    for (let i = 0; i < numCPUs; i++) forkWorker();
 
     // Auto-restart dead workers
     cluster.on('exit', (worker, code, signal) => {
+        if (cluster.isShuttingDown) return;
         console.warn(`⚠  Worker ${worker.process.pid} died (${signal || code}). Respawning...`);
-        cluster.fork();
+        forkWorker();
     });
 
     cluster.on('online', (worker) => {
@@ -262,7 +291,8 @@ if (cluster.isMaster) {
             }
         });
         locationStream.on('error', (err) => {
-            console.error('Location change stream cursor error:', err.message);
+            console.error('Location change stream cursor error (closing stream):', err.message);
+            locationStream.close().catch(() => {});
         });
     } catch (err) {
         console.error('Change stream init failed (ensure replica set is active):', err.message);

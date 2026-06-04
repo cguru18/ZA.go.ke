@@ -151,7 +151,11 @@ export default function ChatBubble() {
                             <div className={`flex-1 flex items-center rounded-2xl overflow-hidden transition-colors ${
                                 isDarkMode ? 'bg-white/5 focus-within:bg-white/10' : 'bg-gray-100 focus-within:bg-gray-200/50'
                             }`}>
+                                <label htmlFor="chatbubble-message-input" className="sr-only">Message ZA.go support</label>
                                 <input
+                                    id="chatbubble-message-input"
+                                    name="chatMessage"
+                                    autoComplete="off"
                                     type="text"
                                     placeholder="Message ZA.go support..."
                                     value={input}

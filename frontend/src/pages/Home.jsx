@@ -338,7 +338,7 @@ export default function Home() {
                         <input
                             id="search-products-input"
                             name="searchQuery"
-                            autocomplete="off"
+                            autoComplete="off"
                             type="text"
                             placeholder="Search products..."
                             value={searchTerm}
@@ -355,7 +355,10 @@ export default function Home() {
                         />
                     </motion.div>
 
+                    <label htmlFor="sort-select" className="sr-only">Sort products</label>
                     <select
+                        id="sort-select"
+                        name="sort"
                         value={sort}
                         onChange={(e) => setSort(e.target.value)}
                         className="bg-white/5 border border-white/10 text-gray-300 text-sm rounded-2xl px-3 py-2.5 outline-none focus:border-jade/40 transition-colors cursor-pointer"
@@ -421,7 +424,7 @@ export default function Home() {
                                 <input
                                     id="vault-access-input"
                                     name="vaultAccessCode"
-                                    autocomplete="one-time-code"
+                                    autoComplete="one-time-code"
                                     type="text"
                                     placeholder="Enter Code (e.g. X7KR4MPN)"
                                     value={accessCode}
@@ -544,6 +547,8 @@ export default function Home() {
                     user={user}
                     onToggleStock={handleToggleStock}
                     onNotify={handleNotify}
+                    isUnlocked={isUnlocked}
+                    searchTerm={searchTerm}
                 />
             )}
 

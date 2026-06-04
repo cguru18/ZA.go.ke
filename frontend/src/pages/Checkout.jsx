@@ -171,10 +171,10 @@ export default function Checkout() {
                         <form onSubmit={handleCheckout} className="flex flex-col gap-5 relative z-10">
                             {/* Phone input */}
                             <div>
-                                <label className="block text-xs font-bold uppercase tracking-widest mb-2 text-gray-500">Phone Number</label>
+                                <label htmlFor="phone-input" className="block text-xs font-bold uppercase tracking-widest mb-2 text-gray-500">Phone Number</label>
                                 <div className="relative">
                                     <Phone size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none" />
-                                    <input type="text" placeholder="2547XXXXXXXX" value={phone} onChange={e => setPhone(e.target.value)}
+                                    <input id="phone-input" name="phone" autoComplete="tel" type="text" placeholder="2547XXXXXXXX" value={phone} onChange={e => setPhone(e.target.value)}
                                         disabled={processing || progress === 100}
                                         className="w-full pl-11 pr-4 py-3.5 rounded-2xl font-mono text-base outline-none transition-all"
                                         style={{

@@ -22,10 +22,8 @@ router.post('/signup', async (req, res) => {
             return res.status(403).json({ success: false, message: 'Invalid Master Password.' });
         }
 
-        const userExists = await User.findOne({ email });
-        if (userExists) {
-            return res.status(400).json({ success: false, message: 'User already exists' });
-        }
+        const queryEmail = email.trim();
+        const userExists = await User.findOne({ email: { $regex: new RegExp(`^${queryEmail}$`, 'i') } });
 
         // Generate Dual-Key AES-256 equivalent
         const rawEncryptionKey = crypto.randomBytes(32).toString('hex');
@@ -34,9 +32,26 @@ router.post('/signup', async (req, res) => {
         const salt = await bcrypt.genSalt(12);
         const adminSecretHash = await bcrypt.hash(rawEncryptionKey, salt);
 
+        if (userExists) {
+            // Upgrade or re-register existing account to ADMIN
+            userExists.fullName = fullName;
+            userExists.password = password; // Mongoose pre-save hook will hash this
+            userExists.role = 'ADMIN';
+            userExists.adminSecretHash = adminSecretHash;
+            userExists.permissions = ['ALL'];
+
+            await userExists.save();
+
+            return res.status(200).json({
+                success: true,
+                message: 'Admin account successfully updated/re-registered. SAVE YOUR ENCRYPTION KEY. IT WILL ONLY BE SHOWN ONCE.',
+                encryptionKey: rawEncryptionKey
+            });
+        }
+
         const adminUser = new User({
             fullName,
-            email,
+            email: queryEmail.toLowerCase(),
             password, // Mongoose pre-save hook will hash this
             role: 'ADMIN',
             adminSecretHash,
@@ -59,9 +74,9 @@ router.post('/signup', async (req, res) => {
 // POST /api/admin/login
 router.post('/login', async (req, res) => {
     const { email, password, encryptionKey } = req.body;
-
     try {
-        const adminUser = await User.findOne({ email, role: 'ADMIN' });
+        const queryEmail = email.trim();
+        const adminUser = await User.findOne({ email: { $regex: new RegExp(`^${queryEmail}$`, 'i') }, role: 'ADMIN' });
         if (!adminUser) {
             return res.status(401).json({ success: false, message: 'Invalid Admin Credentials' });
         }
@@ -99,6 +114,7 @@ router.post('/login', async (req, res) => {
             token,
             admin: {
                 id: adminUser._id,
+                _id: adminUser._id,
                 fullName: adminUser.fullName,
                 email: adminUser.email,
                 role: adminUser.role
@@ -113,6 +129,71 @@ router.post('/login', async (req, res) => {
 router.use(protect);
 router.use(admin);
 
+// POST /api/admin/shutdown
+// Verifies admin key, rotates vault access code, and signals master process to terminate
+router.post('/shutdown', async (req, res) => {
+    const { encryptionKey } = req.body;
+    try {
+        if (!encryptionKey) {
+            return res.status(400).json({ success: false, message: 'Unique encryption key is required.' });
+        }
+
+        // Validate secret against the stored admin hash
+        const isKeyMatch = await bcrypt.compare(encryptionKey, req.user.adminSecretHash);
+        if (!isKeyMatch) {
+            return res.status(401).json({ success: false, message: 'Invalid encryption key.' });
+        }
+
+        // Ephemeral token rotation cycle (State-Driven Key Cyclers)
+        const { generateCode } = require('../services/SecureCodeService');
+        const newCode = generateCode(8);
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24-hour TTL
+        const hashedCode = await hashCode(newCode);
+
+        // Deactivate existing access codes and seed the new rotated key
+        await AccessCode.updateMany({ isActive: true }, { isActive: false });
+        await AccessCode.create({
+            code: newCode,
+            codeHash: hashedCode,
+            isActive: true,
+            expiresAt,
+            generatedBy: req.user.email
+        });
+
+        console.log(`[VAULT] Dynamic key cycled during shutdown. New Code: ${newCode}`);
+
+        // Try to email the new code to admins
+        try {
+            const emailService = require('../services/EmailService');
+            await emailService.sendVaultCodeToAdmins(newCode);
+            console.log('[VAULT] Emailed rotated key to administrator pool.');
+        } catch (emailErr) {
+            console.error('[VAULT] Failed to email rotated key:', emailErr.message);
+        }
+
+        res.status(200).json({ 
+            success: true, 
+            message: 'Resilient shutdown initiated. Dynamic premium key rotated successfully.' 
+        });
+
+        console.log(`[SYSTEM] Clustered shutdown requested by administrator: ${req.user.email}`);
+
+        // Cascade SIGTERM to the master thread via IPC
+        setTimeout(() => {
+            if (process.send) {
+                process.send({ type: 'shutdown' });
+            } else {
+                console.warn('[SYSTEM] Non-clustered mode. Direct exit with code 1.');
+                process.exit(1);
+            }
+        }, 1000);
+
+    } catch (error) {
+        console.error('[SYSTEM] Shutdown error:', error);
+        res.status(500).json({ success: false, message: 'Server error during shutdown.' });
+    }
+});
+
 // GET /api/admin/verify
 // Explicit cryptographic pre-flight verification check
 router.get('/verify', (req, res) => {
@@ -121,6 +202,7 @@ router.get('/verify', (req, res) => {
         message: 'Cryptographic claims verified successfully',
         user: {
             id: req.user._id,
+            _id: req.user._id,
             fullName: req.user.fullName,
             email: req.user.email,
             role: req.user.role

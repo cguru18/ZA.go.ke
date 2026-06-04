@@ -107,7 +107,7 @@ const LOCAL_FALLBACK_MENU = [
         _id: "mock_cocoa_truffles",
         title: "Midnight Cocoa Truffles",
         price: 850,
-        image: "https://images.unsplash.com/photo-1548907040-4d42b52125b0?q=80&w=600&auto=format&fit=crop",
+        image: "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=600&auto=format&fit=crop",
         category: "Sweets $ Treats",
         thc: "15%",
         inStock: true,
@@ -119,7 +119,7 @@ const LOCAL_FALLBACK_MENU = [
         _id: "mock_honeycomb_brittle",
         title: "Infused Honeycomb Brittle",
         price: 950,
-        image: "https://images.unsplash.com/photo-1581798459219-318e76ae1d50?q=80&w=600&auto=format&fit=crop",
+        image: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?q=80&w=600&auto=format&fit=crop",
         category: "Sweets $ Treats",
         thc: "20%",
         inStock: true,
@@ -159,6 +159,102 @@ export default function ProductFeedGrid({ products: propsProducts, onAddToCart, 
     const [error, setError] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [localStockOverrides, setLocalStockOverrides] = useState({});
+    
+    // Admin Edit overrides state
+    const [editedProducts, setEditedProducts] = useState({});
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editingProduct, setEditingProduct] = useState(null);
+    const [editForm, setEditForm] = useState({
+        title: '',
+        price: '',
+        description: '',
+        thc: '',
+        ageLimit: 'Family friendly',
+        category: 'pastries',
+        inStock: true
+    });
+    const [editError, setEditError] = useState(null);
+    const [editLoading, setEditLoading] = useState(false);
+
+    const handleOpenEditModal = (product) => {
+        const productName = product.productName || product.title || '';
+        const pricingTier = product.pricingTier || product.price || 0;
+        const currentAgeLimit = product.ageLimit || (product.isInfused ? "18+" : "Family friendly");
+        
+        setEditingProduct(product);
+        setEditForm({
+            title: productName,
+            price: pricingTier,
+            description: product.description || '',
+            thc: product.thc || '',
+            ageLimit: currentAgeLimit,
+            category: product.category || 'pastries',
+            inStock: product.inStock !== false
+        });
+        setEditError(null);
+        setIsEditModalOpen(true);
+    };
+
+    const handleEditFormChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setEditForm(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
+    };
+
+    const handleSaveEdit = async (e) => {
+        e.preventDefault();
+        setEditError(null);
+        setEditLoading(true);
+
+        const updatedFields = {
+            title: editForm.title,
+            price: Number(editForm.price),
+            description: editForm.description,
+            thc: editForm.thc,
+            ageLimit: editForm.ageLimit,
+            category: editForm.category,
+            inStock: editForm.inStock,
+            isInfused: editForm.ageLimit === '18+' || editForm.category === 'Sweets $ Treats'
+        };
+
+        if (editingProduct._id.startsWith('mock_')) {
+            setEditedProducts(prev => ({
+                ...prev,
+                [editingProduct._id]: updatedFields
+            }));
+            setEditLoading(false);
+            setIsEditModalOpen(false);
+            setEditingProduct(null);
+        } else {
+            try {
+                const token = user?.token || localStorage.getItem('token');
+                const { data } = await axios.put(
+                    `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products/${editingProduct._id}`,
+                    updatedFields,
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+
+                if (data) {
+                    setEditedProducts(prev => ({
+                        ...prev,
+                        [editingProduct._id]: {
+                            ...updatedFields,
+                            _id: editingProduct._id
+                        }
+                    }));
+                    setIsEditModalOpen(false);
+                    setEditingProduct(null);
+                }
+            } catch (err) {
+                console.error('Failed to update product on backend:', err);
+                setEditError(err.response?.data?.message || err.message || 'Failed to persist product edits.');
+            } finally {
+                setEditLoading(false);
+            }
+        }
+    };
 
     const hasPropsProducts = Array.isArray(propsProducts) && propsProducts.length > 0;
 
@@ -207,12 +303,16 @@ export default function ProductFeedGrid({ products: propsProducts, onAddToCart, 
         return base;
     })();
 
-    // Apply local overrides for stock status toggling
+    // Apply local overrides for stock status toggling and product edits
     const productsWithOverrides = mergedProducts.map(p => {
+        let updated = p;
         if (localStockOverrides[p._id] !== undefined) {
-            return { ...p, inStock: localStockOverrides[p._id] };
+            updated = { ...updated, inStock: localStockOverrides[p._id] };
         }
-        return p;
+        if (editedProducts[p._id] !== undefined) {
+            updated = { ...updated, ...editedProducts[p._id] };
+        }
+        return updated;
     });
 
     // Local Search & Category Filter
@@ -445,7 +545,15 @@ export default function ProductFeedGrid({ products: propsProducts, onAddToCart, 
                                 {/* Controls */}
                                 <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-white/5">
                                     <div className="flex gap-2">
-                                        {inStock ? (
+                                        {user?.role === 'ADMIN' ? (
+                                            <button 
+                                                onClick={() => handleOpenEditModal(p)}
+                                                className="flex-1 bg-gradient-to-r from-amber-500/80 to-orange-500/80 hover:from-amber-400 hover:to-orange-400 text-black text-xs font-black flex items-center justify-center gap-1.5 py-2.5 rounded transition-all duration-300 font-mono shadow-lg shadow-orange-500/10 active:scale-95"
+                                            >
+                                                <span className="material-symbols-outlined text-[14px]">edit</span>
+                                                <span>EDIT ENTRY</span>
+                                            </button>
+                                        ) : inStock ? (
                                             <button 
                                                 onClick={() => onAddToCart && onAddToCart(p)}
                                                 className="flex-1 btn-stitch-primary text-xs flex items-center justify-center gap-1.5 py-2"
@@ -483,6 +591,163 @@ export default function ProductFeedGrid({ products: propsProducts, onAddToCart, 
                     );
                 })}
             </div>
+
+            {/* Premium Glassmorphic Product Edit Modal */}
+            {isEditModalOpen && editingProduct && (
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 backdrop-blur-md p-4 animate-fadeIn">
+                    <div 
+                        className="w-full max-w-lg rounded-xl overflow-hidden p-6 border shadow-2xl transition-all duration-300 transform scale-100"
+                        style={{
+                            background: 'rgba(20,22,26,0.97)',
+                            borderColor: 'rgba(0, 229, 255, 0.25)',
+                            boxShadow: '0 20px 50px rgba(0,0,0,0.8), 0 0 20px rgba(0,229,255,0.05)'
+                        }}
+                    >
+                        {/* Modal Header */}
+                        <div className="flex justify-between items-center border-b border-white/5 pb-4 mb-4">
+                            <div className="flex items-center gap-2">
+                                <span className="material-symbols-outlined text-[#00E5FF]">edit_note</span>
+                                <h3 className="text-sm font-bold uppercase tracking-widest text-[#e2e2e6] font-mono">
+                                    Edit Product Entry
+                                </h3>
+                            </div>
+                            <button 
+                                onClick={() => { setIsEditModalOpen(false); setEditingProduct(null); }}
+                                className="text-gray-400 hover:text-white hover:bg-white/5 p-1.5 rounded-full transition-all"
+                            >
+                                <span className="material-symbols-outlined text-[18px]">close</span>
+                            </button>
+                        </div>
+
+                        {editError && (
+                            <div className="mb-4 p-3 rounded bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-mono flex items-center gap-2">
+                                <span className="material-symbols-outlined text-[16px]">error</span>
+                                <span>{editError}</span>
+                            </div>
+                        )}
+
+                        {/* Edit Form */}
+                        <form onSubmit={handleSaveEdit} className="space-y-4 font-sans text-xs">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="col-span-2">
+                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1.5 font-mono">Product Title</label>
+                                    <input 
+                                        type="text" 
+                                        name="title" 
+                                        required
+                                        value={editForm.title} 
+                                        onChange={handleEditFormChange} 
+                                        className="w-full bg-[#111316] border border-white/10 rounded px-3 py-2 text-white outline-none focus:border-[#00E5FF] transition-all font-mono"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1.5 font-mono">Price (KSh)</label>
+                                    <input 
+                                        type="number" 
+                                        name="price" 
+                                        required
+                                        value={editForm.price} 
+                                        onChange={handleEditFormChange} 
+                                        className="w-full bg-[#111316] border border-white/10 rounded px-3 py-2 text-white outline-none focus:border-[#00E5FF] transition-all font-mono"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1.5 font-mono">THC Strength</label>
+                                    <input 
+                                        type="text" 
+                                        name="thc" 
+                                        value={editForm.thc} 
+                                        onChange={handleEditFormChange} 
+                                        placeholder="e.g. 15% or 0mg"
+                                        className="w-full bg-[#111316] border border-white/10 rounded px-3 py-2 text-white outline-none focus:border-[#00E5FF] transition-all font-mono"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1.5 font-mono">Category</label>
+                                    <select 
+                                        name="category"
+                                        value={editForm.category}
+                                        onChange={handleEditFormChange}
+                                        className="w-full bg-[#111316] border border-white/10 rounded px-3 py-2 text-white outline-none focus:border-[#00E5FF] transition-all cursor-pointer font-mono"
+                                    >
+                                        <option value="pastries">pastries</option>
+                                        <option value="Drinks">Drinks</option>
+                                        <option value="Sweets $ Treats">Sweets $ Treats</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1.5 font-mono">Age Restriction</label>
+                                    <select 
+                                        name="ageLimit"
+                                        value={editForm.ageLimit}
+                                        onChange={handleEditFormChange}
+                                        className="w-full bg-[#111316] border border-white/10 rounded px-3 py-2 text-white outline-none focus:border-[#00E5FF] transition-all cursor-pointer font-mono"
+                                    >
+                                        <option value="Family friendly">Family friendly (Non-infused)</option>
+                                        <option value="18+">18+ (Infused)</option>
+                                    </select>
+                                </div>
+
+                                <div className="col-span-2">
+                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1.5 font-mono">Description</label>
+                                    <textarea 
+                                        name="description" 
+                                        rows="3"
+                                        value={editForm.description} 
+                                        onChange={handleEditFormChange} 
+                                        className="w-full bg-[#111316] border border-white/10 rounded px-3 py-2 text-white outline-none focus:border-[#00E5FF] transition-all font-mono resize-none"
+                                    />
+                                </div>
+
+                                <div className="col-span-2 flex items-center gap-3 py-2 border-t border-b border-white/5">
+                                    <input 
+                                        type="checkbox" 
+                                        id="edit-instock" 
+                                        name="inStock"
+                                        checked={editForm.inStock} 
+                                        onChange={handleEditFormChange}
+                                        className="w-4 h-4 accent-[#25C2A0] rounded cursor-pointer"
+                                    />
+                                    <label htmlFor="edit-instock" className="text-[11px] font-mono text-gray-300 cursor-pointer select-none">
+                                        In Stock (Available for selection / order placement)
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3 pt-2">
+                                <button 
+                                    type="button"
+                                    onClick={() => { setIsEditModalOpen(false); setEditingProduct(null); }}
+                                    className="flex-1 py-2.5 rounded border border-white/10 text-gray-400 hover:text-white transition-all font-mono"
+                                >
+                                    CANCEL
+                                </button>
+                                <button 
+                                    type="submit"
+                                    disabled={editLoading}
+                                    className="flex-1 bg-gradient-to-r from-[#25C2A0] to-[#00E5FF] text-[#00382c] font-black py-2.5 rounded transition-all hover:opacity-90 disabled:opacity-50 font-mono flex items-center justify-center gap-1.5"
+                                >
+                                    {editLoading ? (
+                                        <>
+                                            <span className="w-3.5 h-3.5 border-2 border-[#00382c]/30 border-t-[#00382c] rounded-full animate-spin" />
+                                            <span>SAVING...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="material-symbols-outlined text-[15px]">save</span>
+                                            <span>SAVE CHANGES</span>
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

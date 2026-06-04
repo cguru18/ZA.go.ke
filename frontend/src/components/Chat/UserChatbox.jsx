@@ -36,7 +36,7 @@ export default function UserChatbox() {
     });
     const [isAdminTyping, setIsAdminTyping] = useState(false);
 
-    const conversationId = user ? `conv_${user._id}` : null;
+    const conversationId = user ? `conv_${user._id || user.id}` : null;
     const typingTimeoutRef = useRef(null);
 
     const formatLastSeen = (dateString) => {
@@ -101,7 +101,7 @@ export default function UserChatbox() {
         const socketIo = io(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/support`, {
             auth: {
                 role: 'CUSTOMER',
-                customerId: user._id,
+                customerId: user._id || user.id,
                 token: token
             },
             reconnectionAttempts: 5
@@ -165,7 +165,7 @@ export default function UserChatbox() {
         // Emit message payload to support socket room
         socket.emit('send_message', {
             conversationId,
-            senderId: user._id,
+            senderId: user._id || user.id,
             message: input.trim()
         });
 
@@ -243,12 +243,12 @@ export default function UserChatbox() {
                                     <div className="flex gap-1.5 items-center mb-1 text-[#00e5ff]">
                                         <Sparkles size={12} /> <span className="text-[10px] font-bold uppercase tracking-wider font-mono">VIP Virtual Assistant</span>
                                     </div>
-                                    Hello {user.fullName.split(' ')[0]}! This connection is encrypted. Send a message to contact our active support agents.
+                                    Hello {user?.fullName ? user.fullName.split(' ')[0] : 'Guest'}! This connection is encrypted. Send a message to contact our active support agents.
                                 </div>
                             </div>
 
                             {messages.map((msg, idx) => {
-                                const isMe = msg.senderId === user._id;
+                                const isMe = msg.senderId === (user._id || user.id);
                                 return (
                                     <motion.div
                                         initial={{ opacity: 0, y: 10 }}
@@ -291,7 +291,11 @@ export default function UserChatbox() {
                             <div className={`flex-1 flex items-center rounded-[4px] overflow-hidden transition-colors ${
                                 isDarkMode ? 'bg-[#1a1c1f] border border-[#3c4a45] focus-within:border-[#00e5ff]' : 'bg-gray-100 focus-within:bg-gray-200/50'
                              }`}>
+                                <label htmlFor="support-message-input" className="sr-only">Type encrypted message</label>
                                 <input
+                                    id="support-message-input"
+                                    name="message"
+                                    autoComplete="off"
                                     type="text"
                                     placeholder="Type encrypted message..."
                                     value={input}

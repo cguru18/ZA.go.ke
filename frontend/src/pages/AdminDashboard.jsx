@@ -8,7 +8,7 @@ import { AuthContext } from '../context/AuthContext';
 import {
     RefreshCcw, TrendingUp, Users, Truck, MessageSquare,
     Lock, Volume2, MapPin, AlertTriangle, CheckCircle2,
-    XCircle, Eye, EyeOff, ShieldAlert, Map, Activity, Zap
+    XCircle, Eye, EyeOff, ShieldAlert, Map, Activity, Zap, Power
 } from 'lucide-react';
 import { io } from 'socket.io-client';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
@@ -85,10 +85,10 @@ function ConfirmCodeChangeModal({ onConfirm, onCancel }) {
                     <AlertTriangle size={14} className="mt-0.5 shrink-0" />
                     <span>Customers with the old code will be locked out instantly. Distribute the new code first.</span>
                 </div>
-                <label className="block text-xs font-bold uppercase tracking-widest mb-2 text-gray-400">
+                <label htmlFor="confirm-phrase-input" className="block text-xs font-bold uppercase tracking-widest mb-2 text-gray-400">
                     Type <span className="font-mono text-red-400">CHANGE CODE</span> to confirm
                 </label>
-                <input value={typed} onChange={e => setTyped(e.target.value.toUpperCase())} placeholder="CHANGE CODE"
+                <input id="confirm-phrase-input" name="confirmPhrase" autoComplete="off" value={typed} onChange={e => setTyped(e.target.value.toUpperCase())} placeholder="CHANGE CODE"
                     className="w-full px-4 py-3 rounded-xl text-sm font-mono outline-none mb-5 transition-all"
                     style={{ background: 'rgba(255,255,255,0.05)', border: `1px solid ${typed === PHRASE ? 'rgba(239,68,68,0.5)' : 'rgba(255,255,255,0.08)'}`, color: '#fff' }} />
                 <div className="flex gap-3">
@@ -102,6 +102,55 @@ function ConfirmCodeChangeModal({ onConfirm, onCancel }) {
                             color: typed === PHRASE ? '#f87171' : '#4b5563',
                             cursor: typed === PHRASE ? 'pointer' : 'not-allowed',
                         }}>Confirm Change</button>
+                </div>
+            </motion.div>
+        </div>
+    );
+}
+
+function ConfirmShutdownModal({ onConfirm, onCancel, shutdownKey, setShutdownKey, loading, error }) {
+    return (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 backdrop-blur-md p-4">
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                className="w-full max-w-md rounded-3xl p-6 shadow-2xl font-mono text-xs"
+                style={{ background: 'rgba(10,10,20,0.97)', border: '1px solid rgba(239,68,68,0.3)', boxShadow: '0 32px 80px rgba(0,0,0,0.8), 0 0 40px rgba(239,68,68,0.1)' }}>
+                <div className="flex items-center gap-3 mb-4 font-sans">
+                    <div className="p-2.5 rounded-2xl" style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)' }}>
+                        <ShieldAlert size={22} className="text-red-500" />
+                    </div>
+                    <div>
+                        <h2 className="text-lg font-bold text-white">System Shutdown Sequence</h2>
+                        <p className="text-xs text-gray-500 mt-0.5">HALT entire cluster gateway and rotate keys.</p>
+                    </div>
+                </div>
+                <div className="mb-5 p-3.5 rounded-2xl flex items-start gap-2.5 text-xs text-[#f87171] leading-relaxed font-sans"
+                    style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)' }}>
+                    <AlertTriangle size={14} className="mt-0.5 shrink-0" />
+                    <span>CRITICAL: This action stops all servers immediately. Enter your 64-character encryption key to execute.</span>
+                </div>
+                {error && (
+                    <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-mono">
+                        {error}
+                    </div>
+                )}
+                <label htmlFor="shutdown-key-input" className="block text-xs font-bold uppercase tracking-widest mb-2 text-gray-400 font-sans">
+                    Unique Encryption Key
+                </label>
+                <input id="shutdown-key-input" name="shutdownKey" autoComplete="off" value={shutdownKey} onChange={e => setShutdownKey(e.target.value)} placeholder="Enter 64-character key..."
+                    className="w-full px-4 py-3 rounded-xl text-xs font-mono outline-none mb-5 transition-all text-white bg-white/5 border border-white/10 focus:border-red-500/50" />
+                <div className="flex gap-3 font-sans">
+                    <button onClick={onCancel} className="flex-1 py-3 rounded-xl text-sm font-bold text-gray-400 hover:text-white transition-colors border border-white/10">Cancel</button>
+                    <button disabled={shutdownKey.length < 10 || loading} onClick={onConfirm}
+                        className="flex-1 py-3 rounded-xl text-sm font-bold transition-all text-white flex items-center justify-center gap-1.5"
+                        style={{
+                            background: 'rgba(220,38,38,0.2)',
+                            border: '1px solid rgba(220,38,38,0.4)',
+                            cursor: loading ? 'not-allowed' : 'pointer',
+                        }}>
+                        {loading ? (
+                            <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        ) : 'Execute Shutdown'}
+                    </button>
                 </div>
             </motion.div>
         </div>
@@ -134,6 +183,35 @@ export default function AdminDashboard() {
     const queryClient = useQueryClient();
 
     const [activeChats, setActiveChats] = useState([]);
+    
+    // Shutdown Sequence states
+    const [isShutdownModalOpen, setIsShutdownModalOpen] = useState(false);
+    const [shutdownKey, setShutdownKey] = useState('');
+    const [isSystemOffline, setIsSystemOffline] = useState(false);
+    const [shutdownLoading, setShutdownLoading] = useState(false);
+    const [shutdownError, setShutdownError] = useState(null);
+
+    const handleShutdown = async () => {
+        setShutdownError(null);
+        setShutdownLoading(true);
+        try {
+            const { data } = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/shutdown`, {
+                encryptionKey: shutdownKey
+            }, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            if (data.success) {
+                setIsShutdownModalOpen(false);
+                setIsSystemOffline(true);
+            } else {
+                setShutdownError(data.message || 'Shutdown failed.');
+            }
+        } catch (err) {
+            setShutdownError(err.response?.data?.message || err.message || 'Server error during shutdown command.');
+        } finally {
+            setShutdownLoading(false);
+        }
+    };
     const [activeTab, setActiveTab] = useState('overview');
     const [selectedConvId, setSelectedConvId] = useState(null);
     const [pingEnabled, setPingEnabled] = useState(true);
@@ -321,6 +399,11 @@ export default function AdminDashboard() {
                                 className="p-2.5 rounded-2xl transition-all"
                                 style={{ background: pingEnabled ? 'rgba(200,162,200,0.12)' : 'rgba(255,255,255,0.04)', border: `1px solid ${pingEnabled ? 'rgba(200,162,200,0.3)' : 'rgba(255,255,255,0.06)'}`, color: pingEnabled ? '#c8a2c8' : '#6b7280' }}>
                                 <Volume2 size={16} />
+                            </button>
+                            <button onClick={() => setIsShutdownModalOpen(true)}
+                                className="p-2.5 rounded-2xl bg-red-950/20 hover:bg-red-500/20 border border-red-900/30 hover:border-red-500/50 text-red-500 transition-all shadow-lg active:scale-95"
+                                title="Shutdown System Gateway">
+                                <Power size={16} />
                             </button>
                         </div>
                     </motion.div>
@@ -541,6 +624,42 @@ export default function AdminDashboard() {
                     </AnimatePresence>
                 </main>
             </div>
+
+            {isShutdownModalOpen && (
+                <ConfirmShutdownModal 
+                    onCancel={() => { setIsShutdownModalOpen(false); setShutdownKey(''); setShutdownError(null); }}
+                    onConfirm={handleShutdown}
+                    shutdownKey={shutdownKey}
+                    setShutdownKey={setShutdownKey}
+                    loading={shutdownLoading}
+                    error={shutdownError}
+                />
+            )}
+
+            {isSystemOffline && (
+                <div className="fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-black/95 backdrop-blur-2xl p-6 text-center select-none">
+                    <motion.div 
+                        initial={{ scale: 0.9, opacity: 0 }} 
+                        animate={{ scale: 1, opacity: 1 }} 
+                        transition={{ duration: 0.5 }}
+                        className="flex flex-col items-center max-w-md"
+                    >
+                        <div className="w-16 h-16 rounded-full bg-red-950/50 border border-red-500/30 flex items-center justify-center text-red-500 mb-6 animate-pulse">
+                            <ShieldAlert size={36} />
+                        </div>
+                        <h1 className="text-2xl font-black uppercase tracking-widest text-red-500 font-mono mb-3">
+                            SYSTEM TERMINATED
+                        </h1>
+                        <p className="text-sm text-gray-400 leading-relaxed font-sans mb-6">
+                            The administrative shutdown sequence has successfully completed. All clustered Node.js worker pools have exited safely.
+                        </p>
+                        <div className="px-4 py-2 bg-red-950/20 border border-red-900/30 rounded-xl flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                            <span className="text-[10px] uppercase font-bold text-red-400 tracking-widest font-mono">Gateway Offline</span>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
         </>
     );
 }

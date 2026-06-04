@@ -47,10 +47,10 @@ self.addEventListener('fetch', (event) => {
             return networkResponse;
           })
           .catch(() => {
-            return new Response('Network connectivity error recorded safely.', {
+            return new Response(JSON.stringify({ error: 'Network offline.' }), {
               status: 503,
               statusText: 'Service Unavailable',
-              headers: { 'Content-Type': 'text/plain' }
+              headers: { 'Content-Type': 'application/json' }
             });
           });
       })
@@ -62,10 +62,10 @@ self.addEventListener('fetch', (event) => {
         .catch(() => {
           return caches.match(event.request).then((cachedResponse) => {
             if (cachedResponse) return cachedResponse;
-            return new Response('Network connectivity error recorded safely.', {
+            return new Response(JSON.stringify({ error: 'Network offline.' }), {
               status: 503,
               statusText: 'Service Unavailable',
-              headers: { 'Content-Type': 'text/plain' }
+              headers: { 'Content-Type': 'application/json' }
             });
           });
         })

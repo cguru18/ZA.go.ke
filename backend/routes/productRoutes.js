@@ -199,4 +199,36 @@ router.get('/:id/reviews', async (req, res) => {
     }
 });
 
+/**
+ * PUT /api/products/:id
+ * Edit product details (Protected & Admin Only)
+ */
+router.put('/:id', protect, admin, async (req, res) => {
+    try {
+        const { title, description, thc, price, category, isInfused, image, ageLimit, inStock } = req.body;
+        const product = await Product.findById(req.params.id);
+        if (!product) return res.status(404).json({ message: 'Product not found' });
+
+        if (title !== undefined) product.title = title;
+        if (description !== undefined) product.description = description;
+        if (thc !== undefined) product.thc = thc;
+        if (price !== undefined) product.price = Number(price);
+        if (category !== undefined) {
+            product.category = category;
+            const colors = { Flower: '#10b981', Edible: '#f59e0b', Concentrate: '#8b5cf6', Default: '#64748b' };
+            product.color = colors[category] || colors['Default'];
+        }
+        if (isInfused !== undefined) product.isInfused = isInfused;
+        if (image !== undefined) product.image = image;
+        if (ageLimit !== undefined) product.ageLimit = ageLimit;
+        if (inStock !== undefined) product.inStock = inStock;
+
+        await product.save();
+        res.json(product);
+    } catch (error) {
+        console.error('Product update error:', error);
+        res.status(500).json({ message: 'Failed to update product' });
+    }
+});
+
 module.exports = router;

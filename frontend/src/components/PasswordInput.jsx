@@ -67,7 +67,7 @@ export default function PasswordInput({
                     id={inputId}
                     type={showPassword ? 'text' : 'password'}
                     name={name}
-                    autocomplete={getAutocomplete()}
+                    autoComplete={getAutocomplete()}
                     value={value}
                     onChange={onChange}
                     onKeyDown={handleKeyEvent}
