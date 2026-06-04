@@ -204,16 +204,16 @@ export default function AdminLogin() {
                         <AnimatePresence>
                             {mode === 'signup' && (
                                 <motion.div key="fullName" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
-                                    <label className="block label-caps mb-2">Full Name</label>
-                                    <input name="fullName" type="text" placeholder="Jane Doe" value={form.fullName} onChange={handleChange} className="input-technical w-full" required />
+                                    <label htmlFor="fullName-input" className="block label-caps mb-2">Full Name</label>
+                                    <input id="fullName-input" name="fullName" autocomplete="name" type="text" placeholder="Jane Doe" value={form.fullName} onChange={handleChange} className="input-technical w-full" required />
                                 </motion.div>
                             )}
                         </AnimatePresence>
 
                         {/* Email */}
                         <div>
-                            <label className="block label-caps mb-2">Email Address</label>
-                            <input name="email" type="email" placeholder="admin@za.go.ke" value={form.email} onChange={handleChange} className="input-technical w-full" required />
+                            <label htmlFor="email-input" className="block label-caps mb-2">Email Address</label>
+                            <input id="email-input" name="email" autocomplete="email" type="email" placeholder="admin@za.go.ke" value={form.email} onChange={handleChange} className="input-technical w-full" required />
                         </div>
 
                         {/* Password */}

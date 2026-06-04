@@ -334,7 +334,11 @@ export default function Home() {
                             className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-300"
                             style={{ color: searchFocused ? '#00a86b' : '#6b7280' }}
                         />
+                        <label htmlFor="search-products-input" className="sr-only">Search products</label>
                         <input
+                            id="search-products-input"
+                            name="searchQuery"
+                            autocomplete="off"
                             type="text"
                             placeholder="Search products..."
                             value={searchTerm}
@@ -413,7 +417,11 @@ export default function Home() {
                             </div>
 
                             <form onSubmit={handleUnlock} className="flex gap-2.5 w-full md:w-auto relative">
+                                <label htmlFor="vault-access-input" className="sr-only">Vault Access Code</label>
                                 <input
+                                    id="vault-access-input"
+                                    name="vaultAccessCode"
+                                    autocomplete="one-time-code"
                                     type="text"
                                     placeholder="Enter Code (e.g. X7KR4MPN)"
                                     value={accessCode}

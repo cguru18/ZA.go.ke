@@ -27,10 +27,18 @@ export default function PasswordInput({
     className = '',
     inputClassName = '',
     required = false,
+    id,
 }) {
     const { isDarkMode } = useContext(ThemeContext);
     const [showPassword, setShowPassword] = useState(false);
     const [capsLockOn, setCapsLockOn] = useState(false);
+
+    const inputId = id || `${name}-input`;
+    const getAutocomplete = () => {
+        if (name === 'password') return 'current-password';
+        if (name === 'newPassword' || name === 'masterPassword') return 'new-password';
+        return 'off';
+    };
 
     // Detect Caps Lock from both keydown and keyup for reliability
     const handleKeyEvent = useCallback((e) => {
@@ -48,7 +56,7 @@ export default function PasswordInput({
     return (
         <div className={`flex flex-col gap-1.5 ${className}`}>
             {label && (
-                <label className="text-xs text-gray-400 uppercase tracking-widest font-bold">
+                <label htmlFor={inputId} className="text-xs text-gray-400 uppercase tracking-widest font-bold">
                     {label}
                 </label>
             )}
@@ -56,8 +64,10 @@ export default function PasswordInput({
             {/* Input wrapper */}
             <div className="relative">
                 <input
+                    id={inputId}
                     type={showPassword ? 'text' : 'password'}
                     name={name}
+                    autocomplete={getAutocomplete()}
                     value={value}
                     onChange={onChange}
                     onKeyDown={handleKeyEvent}
