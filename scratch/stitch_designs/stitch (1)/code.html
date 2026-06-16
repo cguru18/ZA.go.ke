@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Infrastructure &amp; Gateway Tier</title>
+<!-- Google Fonts: Inter & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-fixed": "#281800",
+                      "surface-container-high": "#282a2d",
+                      "on-secondary-fixed-variant": "#004f58",
+                      "primary": "#4fdebb",
+                      "secure-emerald": "#25C2A0",
+                      "error-container": "#93000a",
+                      "on-secondary-container": "#00616d",
+                      "on-tertiary-container": "#583b00",
+                      "outline-variant": "#3c4a45",
+                      "secondary-fixed": "#9cf0ff",
+                      "on-error": "#690005",
+                      "surface-dim": "#111316",
+                      "on-surface-variant": "#bbcac3",
+                      "on-tertiary": "#432c00",
+                      "primary-container": "#25c2a0",
+                      "surface": "#111316",
+                      "secondary": "#bdf4ff",
+                      "on-primary-fixed": "#002019",
+                      "tertiary": "#ffbc47",
+                      "active-cyan": "#00E5FF",
+                      "inverse-primary": "#006b57",
+                      "surface-tint": "#4dddb9",
+                      "on-primary": "#00382c",
+                      "surface-slate": "#24282D",
+                      "surface-container": "#1e2023",
+                      "secondary-container": "#00e3fd",
+                      "tertiary-fixed-dim": "#ffba3f",
+                      "surface-container-low": "#1a1c1f",
+                      "background-deep": "#0C0D0E",
+                      "primary-fixed": "#6efad5",
+                      "on-error-container": "#ffdad6",
+                      "on-tertiary-fixed-variant": "#604100",
+                      "on-secondary-fixed": "#001f24",
+                      "tertiary-container": "#e59f00",
+                      "secondary-fixed-dim": "#00daf3",
+                      "tertiary-fixed": "#ffdeae",
+                      "on-secondary": "#00363d",
+                      "surface-variant": "#333538",
+                      "surface-container-highest": "#333538",
+                      "background": "#111316",
+                      "surface-container-lowest": "#0c0e11",
+                      "on-primary-container": "#004a3b",
+                      "error": "#ffb4ab",
+                      "on-primary-fixed-variant": "#005141",
+                      "border-glass": "rgba(255, 255, 255, 0.1)",
+                      "outline": "#85948e",
+                      "inverse-surface": "#e2e2e6",
+                      "on-background": "#e2e2e6",
+                      "inverse-on-surface": "#2f3034",
+                      "surface-bright": "#37393c",
+                      "on-surface": "#e2e2e6",
+                      "warning-amber": "#FFB100",
+                      "primary-fixed-dim": "#4dddb9"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "margin-desktop": "32px",
+                      "unit": "4px",
+                      "max-width": "1600px",
+                      "margin-mobile": "16px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "code-sm": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "code-xs": [
+                              "JetBrains Mono"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "label-caps": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "code-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "code-xs": [
+                              "10px",
+                              {
+                                      "lineHeight": "14px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-caps": [
+                              "11px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.1em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        .pulse-line {
+            position: relative;
+            overflow: hidden;
+        }
+        .pulse-line::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(79, 222, 187, 0.8), transparent);
+            animation: pulse 2s infinite linear;
+        }
+        @keyframes pulse {
+            0% { left: -100%; }
+            100% { left: 200%; }
+        }
+        .glow-active {
+            box-shadow: 0 0 10px 2px rgba(0, 229, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-background-deep text-on-surface font-body-md text-body-md min-h-screen flex">
+<!-- Shared Component: SideNavBar -->
+<nav class="bg-surface-dim fixed left-0 h-full w-[280px] border-r border-glass flex flex-col h-full py-6 z-40">
+<!-- Header -->
+<div class="px-6 mb-8 flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-surface-container border border-glass flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-primary" data-weight="fill" style="font-variation-settings: 'FILL' 1;">account_tree</span>
+</div>
+<div>
+<h1 class="font-headline-md text-primary font-bold text-headline-md leading-none tracking-tight">System Index</h1>
+<p class="font-code-xs text-code-xs text-on-surface-variant mt-1">V2.4.0-Stable</p>
+</div>
+</div>
+<!-- Main Navigation -->
+<div class="flex-1 flex flex-col gap-1">
+<!-- Tab 0: Architecture Index -->
+<a class="text-on-surface-variant hover:text-on-surface px-4 py-3 flex items-center gap-3 transition-colors hover:bg-surface-variant/50 font-label-caps text-label-caps mx-2 rounded" href="#">
+<span class="material-symbols-outlined">hub</span>
+                Architecture Index
+            </a>
+<!-- Tab 1: Infrastructure Tier (ACTIVE) -->
+<a class="bg-primary/10 text-primary border-r-4 border-primary px-4 py-3 flex items-center gap-3 translate-x-1 transition-transform font-label-caps text-label-caps mx-2 rounded-l" href="#">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">dns</span>
+                Infrastructure Tier
+            </a>
+<!-- Tab 2: Core Logic & Data -->
+<a class="text-on-surface-variant hover:text-on-surface px-4 py-3 flex items-center gap-3 transition-colors hover:bg-surface-variant/50 font-label-caps text-label-caps mx-2 rounded" href="#">
+<span class="material-symbols-outlined">database</span>
+                Core Logic &amp; Data
+            </a>
+<!-- Tab 3: Client Interface -->
+<a class="text-on-surface-variant hover:text-on-surface px-4 py-3 flex items-center gap-3 transition-colors hover:bg-surface-variant/50 font-label-caps text-label-caps mx-2 rounded" href="#">
+<span class="material-symbols-outlined">layers</span>
+                Client Interface
+            </a>
+</div>
+<!-- Footer Actions -->
+<div class="px-6 mt-auto flex flex-col gap-2">
+<a class="flex justify-between items-center bg-surface-container-high border border-outline-variant p-3 rounded hover:bg-surface-variant transition-colors group mb-4" href="#security/sla">
+<span class="font-label-caps text-label-caps text-on-surface">Security SLA</span>
+<span class="material-symbols-outlined text-primary group-hover:text-active-cyan text-sm">security</span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 py-2 font-body-md text-body-md transition-colors hover:bg-surface-variant/50 px-2 rounded" href="#">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+                DevOps Logs
+            </a>
+<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 py-2 font-body-md text-body-md transition-colors hover:bg-surface-variant/50 px-2 rounded" href="#">
+<span class="material-symbols-outlined text-[18px]">menu_book</span>
+                API Docs
+            </a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-[280px] flex-1 px-margin-desktop py-8 max-w-max-width overflow-x-hidden">
+<!-- Header Section -->
+<header class="flex items-center justify-between mb-8 pb-4 border-b border-glass">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Infrastructure &amp; Gateway Tier</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Runtime environment, deployment configuration, and traffic routing.</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-2 bg-primary/10 border border-primary/20 px-3 py-1.5 rounded">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+<span class="font-label-caps text-label-caps text-primary tracking-widest uppercase">Cloud Run: Active</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-high border border-glass px-3 py-1.5 rounded">
+<span class="font-label-caps text-label-caps text-on-surface-variant tracking-widest uppercase">Region: us-central1</span>
+</div>
+</div>
+</header>
+<!-- Schematic Panel: Node.js Cluster Model -->
+<section class="mb-10">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-secondary">schema</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Runtime Architecture</h3>
+</div>
+<div class="bg-surface-container-low/80 backdrop-blur-md border border-glass rounded-xl p-8 relative overflow-hidden">
+<!-- Decorative background elements -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+<div class="flex flex-col items-center max-w-3xl mx-auto">
+<!-- Load Balancer Node -->
+<div class="bg-surface-slate border border-active-cyan/30 rounded-lg p-3 w-48 text-center shadow-[0_0_15px_rgba(0,229,255,0.1)] relative z-10">
+<div class="h-1 w-full bg-secondary-container rounded-t-sm absolute top-0 left-0 opacity-80"></div>
+<span class="material-symbols-outlined text-active-cyan mb-1">router</span>
+<div class="font-code-sm text-code-sm text-on-surface">nginx Proxy</div>
+<div class="font-code-xs text-code-xs text-on-surface-variant">Port 80/443</div>
+</div>
+<!-- Connection down -->
+<div class="w-px h-8 bg-glass border-l border-glass pulse-line relative z-0"></div>
+<!-- PM2 / Cluster Master -->
+<div class="bg-surface border border-primary/40 rounded-lg p-4 w-64 text-center relative z-10 glow-active">
+<div class="h-1 w-full bg-primary rounded-t-sm absolute top-0 left-0"></div>
+<span class="material-symbols-outlined text-primary mb-1">settings_suggest</span>
+<div class="font-code-sm text-code-sm text-on-surface">Node.js Master Process</div>
+<div class="font-code-xs text-code-xs text-on-surface-variant">Process Manager (Cluster Module)</div>
+</div>
+<!-- Split Connections -->
+<div class="flex w-[400px] justify-between relative mt-[-1px]">
+<div class="w-1/2 h-8 border-t border-l border-glass rounded-tl pulse-line" style="animation-delay: 0.5s"></div>
+<div class="w-1/2 h-8 border-t border-r border-glass rounded-tr pulse-line" style="animation-delay: 1s"></div>
+<div class="absolute left-1/2 top-0 h-8 w-px border-l border-glass pulse-line" style="animation-delay: 0.2s"></div>
+</div>
+<!-- Workers Row -->
+<div class="flex justify-between w-[480px] z-10">
+<!-- Worker 1 -->
+<div class="bg-surface-container border border-glass rounded p-3 w-32 text-center opacity-90 hover:opacity-100 transition-opacity">
+<div class="h-[2px] w-full bg-secure-emerald absolute top-0 left-0 rounded-t-sm"></div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">memory</span>
+<div class="font-code-xs text-code-xs text-on-surface mt-1">Worker PID: 101</div>
+</div>
+<!-- Worker 2 -->
+<div class="bg-surface-container border border-glass rounded p-3 w-32 text-center opacity-90 hover:opacity-100 transition-opacity">
+<div class="h-[2px] w-full bg-secure-emerald absolute top-0 left-0 rounded-t-sm"></div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">memory</span>
+<div class="font-code-xs text-code-xs text-on-surface mt-1">Worker PID: 102</div>
+</div>
+<!-- Worker 3 -->
+<div class="bg-surface-container border border-glass rounded p-3 w-32 text-center opacity-90 hover:opacity-100 transition-opacity relative">
+<div class="h-[2px] w-full bg-tertiary absolute top-0 left-0 rounded-t-sm"></div>
+<span class="material-symbols-outlined text-tertiary text-sm">memory</span>
+<div class="font-code-xs text-code-xs text-on-surface mt-1">Worker PID: 103</div>
+<div class="absolute -top-2 -right-2 bg-surface-container-high border border-glass rounded-full w-5 h-5 flex items-center justify-center">
+<div class="w-1.5 h-1.5 rounded-full bg-tertiary"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Node Representations (Bento Grid) -->
+<section class="mb-10">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-6">Component Nodes</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- server.js Card -->
+<div class="bg-surface-container/40 backdrop-blur-md border border-glass rounded-lg overflow-hidden flex flex-col group hover:border-primary/30 transition-colors">
+<div class="h-[2px] w-full bg-primary/50 group-hover:bg-primary transition-colors"></div>
+<div class="p-5 flex-1">
+<div class="flex items-start justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-surface border border-glass rounded text-primary">
+<span class="material-symbols-outlined text-lg">code</span>
+</div>
+<h4 class="font-code-sm text-code-sm text-on-surface">server.js</h4>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant bg-surface px-2 py-1 rounded border border-glass">Entry Point</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">Initializes Express application, applies global middleware, and mounts API route modules.</p>
+<div class="bg-[#0C0D0E] border border-glass rounded p-3 font-code-xs text-code-xs text-on-surface-variant overflow-x-auto">
+<pre><code>const app = require('./app');
+const port = process.env.PORT || 8080;
+
+app.listen(port, () =&gt; {
+  logger.info(`Server listening on ${port}`);
+});</code></pre>
+</div>
+</div>
+</div>
+<!-- .env Card -->
+<div class="bg-surface-container/40 backdrop-blur-md border border-glass rounded-lg overflow-hidden flex flex-col group hover:border-tertiary/30 transition-colors">
+<div class="h-[2px] w-full bg-tertiary/50 group-hover:bg-tertiary transition-colors"></div>
+<div class="p-5 flex-1">
+<div class="flex items-start justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-surface border border-glass rounded text-tertiary">
+<span class="material-symbols-outlined text-lg">tune</span>
+</div>
+<h4 class="font-code-sm text-code-sm text-on-surface">.env.production</h4>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant bg-surface px-2 py-1 rounded border border-glass">Config</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">Environment variables injected at runtime via Secret Manager.</p>
+<div class="bg-[#0C0D0E] border border-glass rounded p-3 font-code-xs text-code-xs text-on-surface-variant grid gap-1">
+<div class="flex justify-between border-b border-glass pb-1">
+<span class="text-secondary-fixed">NODE_ENV</span>
+<span>production</span>
+</div>
+<div class="flex justify-between border-b border-glass pb-1">
+<span class="text-secondary-fixed">DB_HOST</span>
+<span>10.vpc.internal.db</span>
+</div>
+<div class="flex justify-between">
+<span class="text-secondary-fixed">LOG_LEVEL</span>
+<span>info</span>
+</div>
+</div>
+</div>
+</div>
+<!-- nginx.conf Card -->
+<div class="bg-surface-container/40 backdrop-blur-md border border-glass rounded-lg overflow-hidden flex flex-col group hover:border-active-cyan/30 transition-colors">
+<div class="h-[2px] w-full bg-active-cyan/50 group-hover:bg-active-cyan transition-colors"></div>
+<div class="p-5 flex-1">
+<div class="flex items-start justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-surface border border-glass rounded text-active-cyan">
+<span class="material-symbols-outlined text-lg">route</span>
+</div>
+<h4 class="font-code-sm text-code-sm text-on-surface">nginx.conf</h4>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant bg-surface px-2 py-1 rounded border border-glass">Load Balancer</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">Handles SSL termination, rate limiting, and reverse proxying to Node upstream cluster.</p>
+<div class="bg-[#0C0D0E] border border-glass rounded p-3 font-code-xs text-code-xs text-on-surface-variant overflow-x-auto">
+<pre><code>upstream backend {
+    server 127.0.0.1:8080;
+    keepalive 64;
+}
+location /api/ {
+    proxy_pass http://backend;
+}</code></pre>
+</div>
+</div>
+</div>
+<!-- Dockerfile Card -->
+<div class="bg-surface-container/40 backdrop-blur-md border border-glass rounded-lg overflow-hidden flex flex-col group hover:border-secondary/30 transition-colors">
+<div class="h-[2px] w-full bg-secondary/50 group-hover:bg-secondary transition-colors"></div>
+<div class="p-5 flex-1">
+<div class="flex items-start justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-surface border border-glass rounded text-secondary">
+<span class="material-symbols-outlined text-lg">deployed_code</span>
+</div>
+<h4 class="font-code-sm text-code-sm text-on-surface">Dockerfile</h4>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant bg-surface px-2 py-1 rounded border border-glass">Container</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">Multi-stage build definition for creating the immutable Cloud Run artifact.</p>
+<ul class="font-code-xs text-code-xs text-on-surface-variant space-y-2">
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-primary">check_circle</span>
+                                FROM node:18-alpine AS builder
+                            </li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-primary">check_circle</span>
+                                COPY package*.json ./ &amp;&amp; npm ci
+                            </li>
+<li class="flex items-center gap-2 text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-tertiary">hourglass_empty</span>
+                                CMD ["npm", "start"]
+                            </li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<!-- Structural Relations -->
+<section>
+<div class="flex items-center gap-2 mb-4 pb-2 border-b border-glass">
+<span class="material-symbols-outlined text-on-surface-variant">account_tree</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Tier Dependencies</h3>
+</div>
+<div class="flex flex-col gap-3">
+<a class="bg-surface-container border border-glass rounded-lg p-4 flex items-center justify-between hover:bg-surface-variant transition-colors group" href="#">
+<div class="flex items-center gap-4">
+<div class="bg-surface border border-glass p-2 rounded">
+<span class="material-symbols-outlined text-secondary">database</span>
+</div>
+<div>
+<h4 class="font-code-sm text-code-sm text-on-surface">Core Logic &amp; Data MOC</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Downstream services, business logic, and database schemas.</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">arrow_forward</span>
+</a>
+<a class="bg-surface-container border border-glass rounded-lg p-4 flex items-center justify-between hover:bg-surface-variant transition-colors group" href="#">
+<div class="flex items-center gap-4">
+<div class="bg-surface border border-glass p-2 rounded">
+<span class="material-symbols-outlined text-secondary">layers</span>
+</div>
+<div>
+<h4 class="font-code-sm text-code-sm text-on-surface">Client Interface MOC</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Upstream consumers, API gateway mapping, and UI components.</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">arrow_forward</span>
+</a>
+</div>
+</section>
+</main>
+</body></html>

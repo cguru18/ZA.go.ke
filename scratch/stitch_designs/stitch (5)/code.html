@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ZA.go.ke System Architecture - Client Interface</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed": "#281800",
+                    "surface-container-high": "#282a2d",
+                    "on-secondary-fixed-variant": "#004f58",
+                    "primary": "#4fdebb",
+                    "secure-emerald": "#25C2A0",
+                    "error-container": "#93000a",
+                    "on-secondary-container": "#00616d",
+                    "on-tertiary-container": "#583b00",
+                    "outline-variant": "#3c4a45",
+                    "secondary-fixed": "#9cf0ff",
+                    "on-error": "#690005",
+                    "surface-dim": "#111316",
+                    "on-surface-variant": "#bbcac3",
+                    "on-tertiary": "#432c00",
+                    "primary-container": "#25c2a0",
+                    "surface": "#111316",
+                    "secondary": "#bdf4ff",
+                    "on-primary-fixed": "#002019",
+                    "tertiary": "#ffbc47",
+                    "active-cyan": "#00E5FF",
+                    "inverse-primary": "#006b57",
+                    "surface-tint": "#4dddb9",
+                    "on-primary": "#00382c",
+                    "surface-slate": "#24282D",
+                    "surface-container": "#1e2023",
+                    "secondary-container": "#00e3fd",
+                    "tertiary-fixed-dim": "#ffba3f",
+                    "surface-container-low": "#1a1c1f",
+                    "background-deep": "#0C0D0E",
+                    "primary-fixed": "#6efad5",
+                    "on-error-container": "#ffdad6",
+                    "on-tertiary-fixed-variant": "#604100",
+                    "on-secondary-fixed": "#001f24",
+                    "tertiary-container": "#e59f00",
+                    "secondary-fixed-dim": "#00daf3",
+                    "tertiary-fixed": "#ffdeae",
+                    "on-secondary": "#00363d",
+                    "surface-variant": "#333538",
+                    "surface-container-highest": "#333538",
+                    "background": "#111316",
+                    "surface-container-lowest": "#0c0e11",
+                    "on-primary-container": "#004a3b",
+                    "error": "#ffb4ab",
+                    "on-primary-fixed-variant": "#005141",
+                    "border-glass": "rgba(255, 255, 255, 0.1)",
+                    "outline": "#85948e",
+                    "inverse-surface": "#e2e2e6",
+                    "on-background": "#e2e2e6",
+                    "inverse-on-surface": "#2f3034",
+                    "surface-bright": "#37393c",
+                    "on-surface": "#e2e2e6",
+                    "warning-amber": "#FFB100",
+                    "primary-fixed-dim": "#4dddb9"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-desktop": "32px",
+                    "unit": "4px",
+                    "max-width": "1600px",
+                    "margin-mobile": "16px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "code-sm": [
+                            "JetBrains Mono"
+                    ],
+                    "headline-md": [
+                            "Inter"
+                    ],
+                    "code-xs": [
+                            "JetBrains Mono"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "headline-lg": [
+                            "Inter"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "label-caps": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "code-sm": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "code-xs": [
+                            "10px",
+                            {
+                                    "lineHeight": "14px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "body-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-lg": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-caps": [
+                            "11px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.1em",
+                                    "fontWeight": "700"
+                            }
+                    ]
+            }
+        },
+        },
+      }
+    </script>
+<style>
+        /* Base styles mapped to design system rules */
+        body {
+            background-color: theme('colors.background-deep');
+            color: theme('colors.on-surface');
+        }
+        
+        .glass-panel {
+            background-color: rgba(26, 28, 31, 0.8); /* surface-container-low */
+            backdrop-filter: blur(12px);
+            border: 1px solid theme('colors.border-glass');
+        }
+        
+        .glow-accent:hover {
+            box-shadow: 0 0 10px 2px rgba(0, 229, 255, 0.1);
+        }
+
+        /* Animated pulse line for architecture maps */
+        .pulse-line {
+            position: relative;
+            background: theme('colors.outline-variant');
+            overflow: hidden;
+        }
+        .pulse-line::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, theme('colors.primary'), transparent);
+            animation: pulse-flow 2s infinite linear;
+        }
+        @keyframes pulse-flow {
+            100% { left: 100%; }
+        }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden antialiased font-body-md text-body-md">
+<!-- SideNavBar Component -->
+<!-- Applying style_component_shape, style_bg_color, style_separation_logic, style_shell_layout -->
+<nav class="fixed left-0 h-full w-[280px] bg-surface-dim border-r border-glass flex flex-col h-full py-6 z-40 hidden md:flex">
+<!-- Header -->
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-headline-md text-headline-md">
+<span class="material-symbols-outlined text-[20px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<div>
+<!-- Applying style_brand_logo partially (color via parent context) -->
+<h1 class="font-headline-md text-headline-md text-primary tracking-tight">System Index</h1>
+<div class="font-code-xs text-code-xs text-on-surface-variant mt-1">V2.4.0-Stable</div>
+</div>
+</div>
+<!-- Navigation Links -->
+<!-- Applying typography: Labels: font-label-caps text-label-caps -->
+<div class="flex-1 overflow-y-auto px-2 space-y-1 font-label-caps text-label-caps tracking-widest">
+<!-- Inactive Tab: Architecture Index -->
+<a class="text-on-surface-variant hover:text-on-surface px-4 py-3 flex items-center gap-3 transition-colors rounded-DEFAULT hover:bg-surface-variant/50" href="#">
+<span class="material-symbols-outlined text-[18px]">hub</span>
+<span>Architecture Index</span>
+</a>
+<!-- Inactive Tab: Infrastructure Tier -->
+<a class="text-on-surface-variant hover:text-on-surface px-4 py-3 flex items-center gap-3 transition-colors rounded-DEFAULT hover:bg-surface-variant/50" href="#">
+<span class="material-symbols-outlined text-[18px]">dns</span>
+<span>Infrastructure Tier</span>
+</a>
+<!-- Inactive Tab: Core Logic & Data -->
+<a class="text-on-surface-variant hover:text-on-surface px-4 py-3 flex items-center gap-3 transition-colors rounded-DEFAULT hover:bg-surface-variant/50" href="#">
+<span class="material-symbols-outlined text-[18px]">database</span>
+<span>Core Logic &amp; Data</span>
+</a>
+<!-- Active Tab: Client Interface -->
+<!-- Applying style_active_navigation EXACTLY -->
+<a class="bg-primary/10 text-primary border-r-4 border-primary px-4 py-3 flex items-center gap-3 rounded-l-DEFAULT translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">layers</span>
+<span>Client Interface</span>
+</a>
+</div>
+<!-- Footer Actions -->
+<div class="mt-auto px-4 pt-6 border-t border-glass space-y-2 font-label-caps text-label-caps text-on-surface-variant">
+<a class="flex items-center gap-3 px-2 py-2 hover:text-primary transition-colors" href="#security/sla">
+<span class="material-symbols-outlined text-[16px]">security</span>
+<span>Security SLA</span>
+</a>
+<a class="flex items-center gap-3 px-2 py-2 hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[16px]">terminal</span>
+<span>DevOps Logs</span>
+</a>
+<a class="flex items-center gap-3 px-2 py-2 hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[16px]">menu_book</span>
+<span>API Docs</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-[280px] h-full overflow-y-auto bg-background-deep p-margin-desktop relative">
+<!-- Header Section -->
+<header class="mb-8 flex justify-between items-end border-b border-glass pb-6">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-1 bg-active-cyan/10 text-active-cyan font-label-caps text-label-caps rounded-DEFAULT uppercase border border-active-cyan/20">Live Sync Active</span>
+<span class="font-code-xs text-code-xs text-on-surface-variant">WS://STREAM.ZA.GO.KE:443</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Client Interface Tier</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 max-w-2xl">
+                    Visualization of React component hierarchy, state management nodes, and real-time socket connections for the user-facing presentation layer.
+                </p>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-surface-variant border border-glass text-on-surface px-4 py-2 rounded-DEFAULT font-code-sm text-code-sm flex items-center gap-2 hover:border-primary transition-colors glow-accent">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+<span>Filter Nodes</span>
+</button>
+</div>
+</header>
+<!-- Bento Grid Layout for Nodes -->
+<div class="grid grid-cols-12 gap-gutter mb-gutter">
+<!-- Node Card: App.jsx (Router/Core) -->
+<div class="col-span-12 md:col-span-8 glass-panel rounded-xl p-6 relative glow-accent transition-all group">
+<div class="absolute top-0 left-0 w-full h-[2px] bg-primary"></div>
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">route</span>
+<div>
+<h3 class="font-code-sm text-code-sm text-primary">App.jsx</h3>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase mt-1">Core Routing &amp; Provider Tree</div>
+</div>
+</div>
+<span class="px-2 py-1 bg-secure-emerald/10 text-secure-emerald font-code-xs text-code-xs rounded border border-secure-emerald/20">HEALTHY</span>
+</div>
+<div class="grid grid-cols-3 gap-4 mt-6">
+<div class="bg-surface-container border border-glass p-3 rounded-lg">
+<div class="font-code-xs text-code-xs text-on-surface-variant mb-1">Context</div>
+<div class="font-body-md text-body-md text-on-surface">AuthProvider</div>
+</div>
+<div class="bg-surface-container border border-glass p-3 rounded-lg">
+<div class="font-code-xs text-code-xs text-on-surface-variant mb-1">Context</div>
+<div class="font-body-md text-body-md text-on-surface">SocketProvider</div>
+</div>
+<div class="bg-surface-container border border-glass p-3 rounded-lg">
+<div class="font-code-xs text-code-xs text-on-surface-variant mb-1">Context</div>
+<div class="font-body-md text-body-md text-on-surface">ThemeContext</div>
+</div>
+</div>
+</div>
+<!-- Node Card: AdminRouteGuard.jsx (Security) -->
+<div class="col-span-12 md:col-span-4 glass-panel rounded-xl p-6 relative glow-accent transition-all">
+<div class="absolute top-0 left-0 w-full h-[2px] bg-tertiary"></div>
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary">gavel</span>
+<div>
+<h3 class="font-code-sm text-code-sm text-tertiary">AdminRouteGuard.jsx</h3>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase mt-1">JWT Claim Validator</div>
+</div>
+</div>
+</div>
+<div class="mt-4 space-y-3">
+<div class="flex items-center justify-between font-code-xs text-code-xs border-b border-glass pb-2">
+<span class="text-on-surface-variant">Required Claim</span>
+<span class="text-on-surface">ROLE_SYSADMIN</span>
+</div>
+<div class="flex items-center justify-between font-code-xs text-code-xs border-b border-glass pb-2">
+<span class="text-on-surface-variant">Redirect Mechanism</span>
+<span class="text-error font-bold">Hard Window Redirect</span>
+</div>
+<div class="flex items-center justify-between font-code-xs text-code-xs">
+<span class="text-on-surface-variant">Security Action</span>
+<span class="text-warning-amber">State Memory Flush</span>
+</div>
+</div>
+</div>
+<!-- Visual Connecting Lines (Simulated in grid for layout purposes) -->
+<div class="col-span-12 flex justify-center py-2">
+<div class="w-px h-8 pulse-line"></div>
+</div>
+<!-- Node Card: Global Axios Interceptor -->
+<div class="col-span-12 glass-panel rounded-xl p-6 relative glow-accent transition-all">
+<div class="absolute top-0 left-0 w-full h-[2px] bg-warning-amber"></div>
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-warning-amber">cell_tower</span>
+<div>
+<h3 class="font-code-sm text-code-sm text-warning-amber">GlobalAxiosInterceptor.js</h3>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase mt-1">Network Error Catcher</div>
+</div>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mt-2 mb-4">
+        Intercepts all outgoing HTTP requests and incoming responses. Catches global network errors (5xx, timeouts) and normalizes them into standardized payload structures before they reach UI components.
+    </p>
+<div class="flex gap-4">
+<span class="px-2 py-1 bg-surface-variant text-on-surface-variant font-code-xs text-code-xs rounded border border-glass flex items-center gap-1"><span class="w-1.5 h-1.5 bg-error rounded-full"></span> 500/503 Isolation</span>
+<span class="px-2 py-1 bg-surface-variant text-on-surface-variant font-code-xs text-code-xs rounded border border-glass flex items-center gap-1"><span class="w-1.5 h-1.5 bg-primary rounded-full"></span> Standardized {error, code} Payload</span>
+</div>
+</div>
+<!-- Node Card: AdminDashboard.jsx -->
+<div class="col-span-12 md:col-span-5 glass-panel rounded-xl p-6 relative glow-accent transition-all">
+<div class="absolute top-0 left-0 w-full h-[2px] bg-secondary-fixed"></div>
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary-fixed">dashboard_customize</span>
+<div>
+<h3 class="font-code-sm text-code-sm text-secondary-fixed">AdminDashboard.jsx</h3>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase mt-1">Command Console Layout</div>
+</div>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mt-2">
+                    Composes statistical widgets, recent activity feeds, and primary navigation for authorized administrative personnel.
+                </p>
+</div>
+<!-- Node Card: AdminChatConsole.jsx -->
+<div class="col-span-12 md:col-span-7 glass-panel rounded-xl p-6 relative glow-accent transition-all">
+<div class="absolute top-0 left-0 w-full h-[2px] bg-primary"></div>
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">forum</span>
+<div>
+<h3 class="font-code-sm text-code-sm text-primary">AdminChatConsole.jsx</h3>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase mt-1">Multi-Thread Queue Manager</div>
+</div>
+</div>
+<span class="flex items-center gap-1 font-code-xs text-code-xs text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-active-cyan animate-pulse"></span>
+                        Listening: wss://tickets
+                    </span>
+</div>
+<div class="flex gap-4 mt-4 mb-4">
+<div class="flex-1 bg-surface-container border border-glass rounded p-2 text-center">
+<div class="font-headline-md text-headline-md text-on-surface">14</div>
+<div class="font-code-xs text-code-xs text-on-surface-variant uppercase">Active Sessions</div>
+</div>
+<div class="flex-1 bg-surface-container border border-glass rounded p-2 text-center">
+<div class="font-headline-md text-headline-md text-warning-amber">3</div>
+<div class="font-code-xs text-code-xs text-on-surface-variant uppercase">Pending Queue</div>
+</div>
+</div>
+<div class="mt-4 border-t border-glass pt-3">
+<div class="flex items-center gap-2 font-code-xs text-code-xs text-on-surface-variant mb-1">
+<span class="material-symbols-outlined text-[14px]">shield_with_heart</span>
+<span class="text-primary font-bold">Resilient Fetch Syntax</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mt-1">
+                    Implements strict try/catch blocks with localized error alerts to prevent component unmounting on failed message dispatches.
+                </p>
+</div>
+</div>
+</div>
+<!-- Detail Panel: Chat UI/UX Specification -->
+<section class="glass-panel rounded-xl p-0 mt-8 overflow-hidden">
+<div class="bg-surface-slate px-6 py-4 border-b border-glass flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-on-surface text-base flex items-center gap-2">
+<span class="material-symbols-outlined text-active-cyan text-[18px]">terminal</span>
+                    Chat Component Architecture &amp; Socket Payloads
+                </h3>
+<span class="font-code-xs text-code-xs text-on-surface-variant">UserChatbox.jsx &lt;-&gt; AdminChatConsole.jsx</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2">
+<!-- Payload 1 -->
+<div class="p-6 border-r border-glass">
+<div class="flex items-center justify-between mb-4">
+<span class="font-label-caps text-label-caps text-active-cyan uppercase tracking-widest">Event: typing_status</span>
+<span class="px-2 py-1 bg-surface-variant text-on-surface-variant font-code-xs text-code-xs rounded">Bidirectional</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4 text-sm">
+                        Emitted to broadcast typing state. Triggers subtle UI indicators (pulsing dots) in the opposing client interface. Throttled to 300ms.
+                    </p>
+<div class="bg-surface-container-highest p-4 rounded-lg font-code-sm text-code-sm text-primary-fixed border border-glass">
+<pre class="whitespace-pre-wrap"><code>{
+  "event": "typing_status",
+  "data": {
+    "thread_id": "req-9982a",
+    "is_typing": true,
+    "user_role": "ADMIN",
+    "timestamp": 1716309221
+  }
+}</code></pre>
+</div>
+</div>
+<!-- Payload 2 -->
+<div class="p-6">
+<div class="flex items-center justify-between mb-4">
+<span class="font-label-caps text-label-caps text-tertiary uppercase tracking-widest">Event: admin_status_change</span>
+<span class="px-2 py-1 bg-surface-variant text-on-surface-variant font-code-xs text-code-xs rounded">Server -&gt; Client</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4 text-sm">
+                        Broadcasts changes in operator availability. UI must gracefully handle disconnects or handoffs by disabling inputs and showing a system message.
+                    </p>
+<div class="bg-surface-container-highest p-4 rounded-lg font-code-sm text-code-sm text-tertiary-fixed border border-glass">
+<pre class="whitespace-pre-wrap"><code>{
+  "event": "admin_status_change",
+  "data": {
+    "admin_id": "op-42",
+    "status": "OFFLINE",
+    "reason": "SHIFT_END",
+    "auto_reassign": true
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<!-- UserChatbox node visual attachment -->
+<div class="bg-surface-container-low border-t border-glass px-6 py-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline-variant">chat_bubble</span>
+<div>
+<h4 class="font-code-sm text-code-sm text-on-surface">UserChatbox.jsx</h4>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase">Floating Action Widget (Client View)</div>
+</div>
+</div>
+<div class="px-3 py-1 border border-primary/30 rounded-full font-code-xs text-code-xs text-primary flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-primary rounded-full"></span>
+                    Consumes Payload Specs
+                </div>
+</div>
+</section>
+</main>
+</body></html>

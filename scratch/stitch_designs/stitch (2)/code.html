@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ZA.go.ke - Architecture Index</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#281800",
+                        "surface-container-high": "#282a2d",
+                        "on-secondary-fixed-variant": "#004f58",
+                        "primary": "#4fdebb",
+                        "secure-emerald": "#25C2A0",
+                        "error-container": "#93000a",
+                        "on-secondary-container": "#00616d",
+                        "on-tertiary-container": "#583b00",
+                        "outline-variant": "#3c4a45",
+                        "secondary-fixed": "#9cf0ff",
+                        "on-error": "#690005",
+                        "surface-dim": "#111316",
+                        "on-surface-variant": "#bbcac3",
+                        "on-tertiary": "#432c00",
+                        "primary-container": "#25c2a0",
+                        "surface": "#111316",
+                        "secondary": "#bdf4ff",
+                        "on-primary-fixed": "#002019",
+                        "tertiary": "#ffbc47",
+                        "active-cyan": "#00E5FF",
+                        "inverse-primary": "#006b57",
+                        "surface-tint": "#4dddb9",
+                        "on-primary": "#00382c",
+                        "surface-slate": "#24282D",
+                        "surface-container": "#1e2023",
+                        "secondary-container": "#00e3fd",
+                        "tertiary-fixed-dim": "#ffba3f",
+                        "surface-container-low": "#1a1c1f",
+                        "background-deep": "#0C0D0E",
+                        "primary-fixed": "#6efad5",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#604100",
+                        "on-secondary-fixed": "#001f24",
+                        "tertiary-container": "#e59f00",
+                        "secondary-fixed-dim": "#00daf3",
+                        "tertiary-fixed": "#ffdeae",
+                        "on-secondary": "#00363d",
+                        "surface-variant": "#333538",
+                        "surface-container-highest": "#333538",
+                        "background": "#111316",
+                        "surface-container-lowest": "#0c0e11",
+                        "on-primary-container": "#004a3b",
+                        "error": "#ffb4ab",
+                        "on-primary-fixed-variant": "#005141",
+                        "border-glass": "rgba(255, 255, 255, 0.1)",
+                        "outline": "#85948e",
+                        "inverse-surface": "#e2e2e6",
+                        "on-background": "#e2e2e6",
+                        "inverse-on-surface": "#2f3034",
+                        "surface-bright": "#37393c",
+                        "on-surface": "#e2e2e6",
+                        "warning-amber": "#FFB100",
+                        "primary-fixed-dim": "#4dddb9"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-desktop": "32px",
+                        "unit": "4px",
+                        "max-width": "1600px",
+                        "margin-mobile": "16px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "code-sm": ["JetBrains Mono"],
+                        "headline-md": ["Inter"],
+                        "code-xs": ["JetBrains Mono"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-caps": ["Inter"]
+                    },
+                    "fontSize": {
+                        "code-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "code-xs": ["10px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Decorative Data Pulses for Architectural Lines */
+        @keyframes pulse-flow {
+            0% { stroke-dashoffset: 200; opacity: 0; }
+            50% { opacity: 1; }
+            100% { stroke-dashoffset: 0; opacity: 0; }
+        }
+        .flow-line {
+            stroke-dasharray: 4 12;
+            animation: pulse-flow 3s linear infinite;
+        }
+        /* Glassmorphism utility enhancements */
+        .glass-panel {
+            background: rgba(36, 40, 45, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-background-deep text-on-surface font-body-md min-h-screen flex flex-col md:flex-row overflow-x-hidden">
+<!-- TopNavBar (Mobile mainly, but acts as header shell) -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 bg-surface-container-lowest/80 backdrop-blur-md shadow-sm border-b border-glass md:hidden">
+<div class="flex items-center gap-3">
+<span class="font-headline-md text-headline-md font-bold text-primary tracking-tight">ZA.go.ke Index</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-active-cyan transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="security" data-weight="regular">security</span>
+</button>
+<button class="text-on-surface-variant hover:text-active-cyan transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="history" data-weight="regular">history</span>
+</button>
+<button class="text-on-surface-variant hover:text-active-cyan transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="account_tree" data-weight="regular">account_tree</span>
+</button>
+<img alt="Principal Architect Avatar" class="w-8 h-8 rounded-full border border-glass" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLc4gLglNiMd6LQDtqy8U1h0207oABUov5v7bQ6PGfpYwJImrRptXFnhPS57ynzxQmcEJBvVB8zVgO4frbndw-WjWANSfImrg7MY6iUhsJmK6-RuSaGY_N_TPWK14QGyQQO5vhJncEhfQk9Ih49owzUig_6iv3yC4dtae0Na6rweP3GSGpSyYHZeTxLD6SwCKzlEYktd8aUtnuAwhEYl4CKFgIyQ0MJNlj4al0fOuA_auNpRrYbnRwKRq8LTqZdf6P0ZDXKnSqRC07"/>
+</div>
+</header>
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden md:flex flex-col h-full py-6 bg-surface-dim border-r border-glass fixed left-0 w-[280px] z-40">
+<div class="px-4 mb-8">
+<div class="flex items-center gap-3 mb-2">
+<img alt="ZA.go.ke System Architecture" class="w-10 h-10 rounded-full border border-glass" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUrCKseRzbyjd8LzC_4zjCuOTo606bBD3jDnBsTvALMhvHtrj02kZot-lcCMohpttUiuPpqCdkdB8fCicTvQ2ohdP5QDJhZ97DheqeZtHXvcCgypla28Zk2jRWvADp0zuLhwBiYJj1rGpF86TssfS5IU3p6aZUsz6Y3LzzHQbSaLY3giKBGsgTTou5Zy6oxq3w6R9pyjuPpK3uti_f7goli9R5_2stLytn9O0dkMUiALdVhCfdol1PY2ifQKkJOCukWGqiyji58Tqi"/>
+<div>
+<h1 class="font-headline-md text-primary text-[18px] leading-tight font-bold">System Index</h1>
+<span class="font-code-sm text-code-sm text-on-surface-variant">V2.4.0-Stable</span>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto px-2 space-y-1">
+<!-- Active Tab -->
+<a class="bg-primary/10 text-primary border-r-4 border-primary px-4 py-3 flex items-center gap-3 translate-x-1 transition-transform rounded-sm" href="#">
+<span class="material-symbols-outlined" data-icon="hub">hub</span>
+<span class="font-label-caps text-label-caps tracking-widest">Architecture Index</span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface px-4 py-3 flex items-center gap-3 transition-colors hover:bg-surface-variant/50 rounded-sm" href="#">
+<span class="material-symbols-outlined" data-icon="dns">dns</span>
+<span class="font-label-caps text-label-caps tracking-widest">Infrastructure Tier</span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface px-4 py-3 flex items-center gap-3 transition-colors hover:bg-surface-variant/50 rounded-sm" href="#">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span class="font-label-caps text-label-caps tracking-widest">Core Logic &amp; Data</span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface px-4 py-3 flex items-center gap-3 transition-colors hover:bg-surface-variant/50 rounded-sm" href="#">
+<span class="material-symbols-outlined" data-icon="layers">layers</span>
+<span class="font-label-caps text-label-caps tracking-widest">Client Interface</span>
+</a>
+</div>
+<div class="mt-auto px-2 space-y-1 pt-4 border-t border-glass">
+<div class="px-4 py-2 mb-2">
+<span class="bg-primary/10 text-primary font-code-xs px-2 py-1 rounded border border-primary/20">#security/sla</span>
+</div>
+<a class="text-on-surface-variant hover:text-on-surface px-4 py-2 flex items-center gap-3 transition-colors hover:bg-surface-variant/50 rounded-sm" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="terminal">terminal</span>
+<span class="font-body-md text-body-md">DevOps Logs</span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface px-4 py-2 flex items-center gap-3 transition-colors hover:bg-surface-variant/50 rounded-sm" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="menu_book">menu_book</span>
+<span class="font-body-md text-body-md">API Docs</span>
+</a>
+</div>
+</nav>
+<!-- Main Canvas -->
+<main class="flex-1 mt-16 md:mt-0 md:ml-[280px] p-margin-mobile md:p-margin-desktop bg-background-deep relative">
+<!-- Top App Bar equivalent for Desktop content area (contextual header) -->
+<header class="hidden md:flex justify-between items-end mb-[24px] pb-4 border-b border-glass">
+<div>
+<h2 class="font-headline-lg text-headline-lg font-bold tracking-tight text-on-surface">Central System Architecture</h2>
+<p class="font-code-sm text-code-sm text-on-surface-variant mt-2">Definitive Executive System Summary • Live Status: <span class="text-primary">Operational</span></p>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-2 px-3 py-1.5 glass-panel rounded">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-code-xs text-code-xs text-primary">All Systems Nominal</span>
+</div>
+</div>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-[16px] lg:gap-[24px]">
+<!-- Hero / Architecture Graph (Spans 8 cols) -->
+<section class="lg:col-span-8 glass-panel rounded-xl p-[12px] relative overflow-hidden flex flex-col min-h-[400px]">
+<div class="flex justify-between items-center mb-4 pb-2 border-b border-glass border-opacity-50">
+<h3 class="font-code-sm text-code-sm text-on-surface-variant uppercase tracking-wider flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">account_tree</span>
+                        Topology Map
+                    </h3>
+<span class="font-code-xs text-code-xs text-secondary-fixed bg-secondary-fixed/10 px-2 py-0.5 rounded border border-secondary-fixed/20">LIVE VECTORS</span>
+</div>
+<!-- Blueprint SVG Map Container -->
+<div class="flex-1 relative bg-[#0a0c0e] rounded border border-glass inset-shadow-sm flex items-center justify-center p-4">
+<!-- Grid background pattern -->
+<div class="absolute inset-0 opacity-10" style="background-image: linear-gradient(#4fdebb 1px, transparent 1px), linear-gradient(90deg, #4fdebb 1px, transparent 1px); background-size: 20px 20px;"></div>
+<svg class="w-full h-full min-h-[300px] relative z-10" preserveaspectratio="xMidYMid meet" viewbox="0 0 800 400">
+<!-- Definitions -->
+<defs>
+<lineargradient id="cyan-glow" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="#00E5FF" stop-opacity="0.2"></stop>
+<stop offset="100%" stop-color="#4fdebb" stop-opacity="0.8"></stop>
+</lineargradient>
+<filter id="glow">
+<fegaussianblur result="coloredBlur" stddeviation="2.5"></fegaussianblur>
+<femerge>
+<femergenode in="coloredBlur"></femergenode>
+<femergenode in="SourceGraphic"></femergenode>
+</femerge>
+</filter>
+</defs>
+<!-- Connections -->
+<path d="M 200 100 L 400 200" fill="none" stroke="rgba(0, 229, 255, 0.3)" stroke-width="1.5"></path>
+<path class="flow-line" d="M 200 100 L 400 200" fill="none" stroke="#00E5FF" stroke-width="2"></path>
+<path d="M 200 300 L 400 200" fill="none" stroke="rgba(0, 229, 255, 0.3)" stroke-width="1.5"></path>
+<path class="flow-line" d="M 200 300 L 400 200" fill="none" stroke="#00E5FF" stroke-width="2" style="animation-delay: 1s;"></path>
+<path d="M 400 200 L 600 100" fill="none" stroke="rgba(79, 222, 187, 0.3)" stroke-width="1.5"></path>
+<path class="flow-line" d="M 400 200 L 600 100" fill="none" stroke="#4fdebb" stroke-width="2" style="animation-delay: 0.5s;"></path>
+<path d="M 400 200 L 600 300" fill="none" stroke="rgba(79, 222, 187, 0.3)" stroke-width="1.5"></path>
+<path class="flow-line" d="M 400 200 L 600 300" fill="none" stroke="#4fdebb" stroke-width="2" style="animation-delay: 1.5s;"></path>
+<!-- Nodes -->
+<!-- Client Layer -->
+<g transform="translate(150, 80)">
+<rect fill="#1e2023" filter="url(#glow)" height="40" rx="4" stroke="#00E5FF" stroke-width="1" width="100" x="0" y="0"></rect>
+<rect fill="#00E5FF" height="2" rx="1" width="100" x="0" y="0"></rect>
+<text fill="#e2e2e6" font-family="JetBrains Mono" font-size="12" text-anchor="middle" x="50" y="24">Client (React)</text>
+</g>
+<!-- Docs Layer -->
+<g transform="translate(150, 280)">
+<rect fill="#1e2023" height="40" rx="4" stroke="#85948e" stroke-width="1" width="100" x="0" y="0"></rect>
+<rect fill="#85948e" height="2" rx="1" width="100" x="0" y="0"></rect>
+<text fill="#bbcac3" font-family="JetBrains Mono" font-size="12" text-anchor="middle" x="50" y="24">Obsidian Sync</text>
+</g>
+<!-- API Gateway -->
+<g transform="translate(350, 180)">
+<rect fill="#1e2023" filter="url(#glow)" height="40" rx="4" stroke="#4fdebb" stroke-width="1" width="100" x="0" y="0"></rect>
+<rect fill="#4fdebb" height="2" rx="1" width="100" x="0" y="0"></rect>
+<text fill="#e2e2e6" font-family="JetBrains Mono" font-size="12" font-weight="bold" text-anchor="middle" x="50" y="24">API Gateway</text>
+<text fill="#bbcac3" font-family="JetBrains Mono" font-size="8" text-anchor="middle" x="50" y="34">Node.js</text>
+</g>
+<!-- DB Layer -->
+<g transform="translate(550, 80)">
+<rect fill="#1e2023" height="40" rx="4" stroke="#ffba3f" stroke-width="1" width="100" x="0" y="0"></rect>
+<rect fill="#ffba3f" height="2" rx="1" width="100" x="0" y="0"></rect>
+<text fill="#e2e2e6" font-family="JetBrains Mono" font-size="12" text-anchor="middle" x="50" y="24">MongoDB</text>
+</g>
+<!-- Cache Layer -->
+<g transform="translate(550, 280)">
+<rect fill="#1e2023" height="40" rx="4" stroke="#00daf3" stroke-width="1" width="100" x="0" y="0"></rect>
+<rect fill="#00daf3" height="2" rx="1" width="100" x="0" y="0"></rect>
+<text fill="#e2e2e6" font-family="JetBrains Mono" font-size="12" text-anchor="middle" x="50" y="24">Redis Cache</text>
+</g>
+</svg>
+</div>
+</section>
+<!-- Metadata & Context Panel (Spans 4 cols) -->
+<section class="lg:col-span-4 flex flex-col gap-[16px]">
+<!-- System Status Card -->
+<div class="glass-panel rounded-xl p-[12px] border-t-2 border-t-primary">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">analytics</span>
+                        System Telemetry
+                    </h3>
+<div class="space-y-4">
+<div class="flex justify-between items-center border-b border-glass pb-2">
+<span class="font-code-sm text-code-sm text-on-surface">Uptime</span>
+<span class="font-code-sm text-code-sm text-primary">99.998%</span>
+</div>
+<div class="flex justify-between items-center border-b border-glass pb-2">
+<span class="font-code-sm text-code-sm text-on-surface">Gateway Latency</span>
+<span class="font-code-sm text-code-sm text-active-cyan">42ms</span>
+</div>
+<div class="flex justify-between items-center border-b border-glass pb-2">
+<span class="font-code-sm text-code-sm text-on-surface">Active Nodes</span>
+<span class="font-code-sm text-code-sm text-on-surface">24/24</span>
+</div>
+<div class="flex justify-between items-center border-b border-glass pb-2">
+<span class="font-code-sm text-code-sm text-on-surface">Last Sync</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">2 mins ago</span>
+</div>
+</div>
+</div>
+<!-- Tags & Metadata -->
+<div class="glass-panel rounded-xl p-[12px] flex-1">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">label</span>
+                        Context Metadata
+                    </h3>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="bg-surface-variant/30 text-on-surface font-code-xs px-2 py-1 rounded border border-glass">#project/zago</span>
+<span class="bg-primary/10 text-primary font-code-xs px-2 py-1 rounded border border-primary/20">#security/sla</span>
+<span class="bg-secondary-fixed/10 text-secondary-fixed font-code-xs px-2 py-1 rounded border border-secondary-fixed/20">#arch/v2</span>
+<span class="bg-surface-variant/30 text-on-surface font-code-xs px-2 py-1 rounded border border-glass">@core-team</span>
+</div>
+<h4 class="font-code-sm text-code-sm text-on-surface mb-2">Executive Summary</h4>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed text-sm">
+                        The central nervous system for ZA.go.ke. This index outlines the primary data flows between the client edge, the resilient API gateway, and the persistent storage tiers. Emphasizes zero-trust internal routing.
+                    </p>
+</div>
+</section>
+<!-- Tiers Grid (Full Width) -->
+<section class="lg:col-span-12 grid grid-cols-1 md:grid-cols-3 gap-[16px] mt-4">
+<!-- Infrastructure Card -->
+<a class="glass-panel rounded-xl p-[12px] hover:border-primary/50 transition-colors group relative overflow-hidden border-t-2 border-t-outline-variant" href="#">
+<div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex items-center gap-3 mb-3">
+<div class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center text-outline-variant">
+<span class="material-symbols-outlined" data-icon="dns">dns</span>
+</div>
+<h4 class="font-headline-md text-body-lg font-semibold text-on-surface">Infrastructure</h4>
+</div>
+<p class="font-code-sm text-code-sm text-on-surface-variant mb-4 line-clamp-2">
+                        Cloud provisioning, load balancing, and network security policies.
+                    </p>
+<div class="flex items-center text-primary font-code-xs gap-1 group-hover:gap-2 transition-all">
+<span>View MOC</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</div>
+</a>
+<!-- Core Logic Card -->
+<a class="glass-panel rounded-xl p-[12px] hover:border-primary/50 transition-colors group relative overflow-hidden border-t-2 border-t-primary" href="#">
+<div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex items-center gap-3 mb-3">
+<div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+</div>
+<h4 class="font-headline-md text-body-lg font-semibold text-on-surface">Core Logic &amp; Data</h4>
+</div>
+<p class="font-code-sm text-code-sm text-on-surface-variant mb-4 line-clamp-2">
+                        Microservices, data models, Redis caching layer, and MongoDB schemas.
+                    </p>
+<div class="flex items-center text-primary font-code-xs gap-1 group-hover:gap-2 transition-all">
+<span>View MOC</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</div>
+</a>
+<!-- Client Interface Card -->
+<a class="glass-panel rounded-xl p-[12px] hover:border-active-cyan/50 transition-colors group relative overflow-hidden border-t-2 border-t-active-cyan" href="#">
+<div class="absolute inset-0 bg-gradient-to-br from-active-cyan/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex items-center gap-3 mb-3">
+<div class="w-8 h-8 rounded bg-secondary-fixed/10 flex items-center justify-center text-active-cyan">
+<span class="material-symbols-outlined" data-icon="layers">layers</span>
+</div>
+<h4 class="font-headline-md text-body-lg font-semibold text-on-surface">Client Interface</h4>
+</div>
+<p class="font-code-sm text-code-sm text-on-surface-variant mb-4 line-clamp-2">
+                        React components, state management, and user-facing API consumption.
+                    </p>
+<div class="flex items-center text-active-cyan font-code-xs gap-1 group-hover:gap-2 transition-all">
+<span>View MOC</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</div>
+</a>
+</section>
+</div>
+</main>
+</body></html>

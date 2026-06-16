@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Core Logic &amp; Data Tier - System Architecture</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed": "#281800",
+                    "surface-container-high": "#282a2d",
+                    "on-secondary-fixed-variant": "#004f58",
+                    "primary": "#4fdebb",
+                    "secure-emerald": "#25C2A0",
+                    "error-container": "#93000a",
+                    "on-secondary-container": "#00616d",
+                    "on-tertiary-container": "#583b00",
+                    "outline-variant": "#3c4a45",
+                    "secondary-fixed": "#9cf0ff",
+                    "on-error": "#690005",
+                    "surface-dim": "#111316",
+                    "on-surface-variant": "#bbcac3",
+                    "on-tertiary": "#432c00",
+                    "primary-container": "#25c2a0",
+                    "surface": "#111316",
+                    "secondary": "#bdf4ff",
+                    "on-primary-fixed": "#002019",
+                    "tertiary": "#ffbc47",
+                    "active-cyan": "#00E5FF",
+                    "inverse-primary": "#006b57",
+                    "surface-tint": "#4dddb9",
+                    "on-primary": "#00382c",
+                    "surface-slate": "#24282D",
+                    "surface-container": "#1e2023",
+                    "secondary-container": "#00e3fd",
+                    "tertiary-fixed-dim": "#ffba3f",
+                    "surface-container-low": "#1a1c1f",
+                    "background-deep": "#0C0D0E",
+                    "primary-fixed": "#6efad5",
+                    "on-error-container": "#ffdad6",
+                    "on-tertiary-fixed-variant": "#604100",
+                    "on-secondary-fixed": "#001f24",
+                    "tertiary-container": "#e59f00",
+                    "secondary-fixed-dim": "#00daf3",
+                    "tertiary-fixed": "#ffdeae",
+                    "on-secondary": "#00363d",
+                    "surface-variant": "#333538",
+                    "surface-container-highest": "#333538",
+                    "background": "#111316",
+                    "surface-container-lowest": "#0c0e11",
+                    "on-primary-container": "#004a3b",
+                    "error": "#ffb4ab",
+                    "on-primary-fixed-variant": "#005141",
+                    "border-glass": "rgba(255, 255, 255, 0.1)",
+                    "outline": "#85948e",
+                    "inverse-surface": "#e2e2e6",
+                    "on-background": "#e2e2e6",
+                    "inverse-on-surface": "#2f3034",
+                    "surface-bright": "#37393c",
+                    "on-surface": "#e2e2e6",
+                    "warning-amber": "#FFB100",
+                    "primary-fixed-dim": "#4dddb9"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-desktop": "32px",
+                    "unit": "4px",
+                    "max-width": "1600px",
+                    "margin-mobile": "16px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "code-sm": ["JetBrains Mono"],
+                    "headline-md": ["Inter"],
+                    "code-xs": ["JetBrains Mono"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-caps": ["Inter"]
+            },
+            "fontSize": {
+                    "code-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "code-xs": ["10px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        /* Base Glass Aesthetics */
+        .glass-panel {
+            background: rgba(40, 42, 45, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .data-pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.3; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 0.3; transform: scale(0.95); }
+        }
+        
+        /* Thin line styles for architecture diagrams */
+        .arch-line-h {
+            height: 1px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(37,194,160,0.5) 50%, rgba(255,255,255,0.1) 100%);
+        }
+        .arch-line-v {
+            width: 1px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,177,0,0.5) 50%, rgba(255,255,255,0.1) 100%);
+        }
+    </style>
+</head>
+<body class="bg-background-deep text-on-surface font-body-md text-body-md h-screen w-screen overflow-hidden flex">
+<!-- Mobile Top Navigation Bar (Hidden on md) -->
+<nav class="md:hidden fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile h-16 bg-surface-container-lowest/80 backdrop-blur-md shadow-sm">
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md font-bold text-primary tracking-tight">ZA.go.ke Index</span>
+</div>
+<div class="flex items-center gap-4 text-primary">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</div>
+</nav>
+<!-- SideNavBar (Hidden on Mobile) -->
+<nav class="hidden md:flex flex-col h-full py-6 fixed left-0 w-[280px] bg-surface-dim border-r border-glass z-40">
+<!-- Header -->
+<div class="px-6 mb-8 flex flex-col gap-1">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center overflow-hidden border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">settings_system_daydream</span>
+</div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight">System Index</h1>
+</div>
+<span class="font-code-xs text-code-xs text-on-surface-variant">V2.4.0-Stable</span>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 flex flex-col gap-2 w-full">
+<!-- Inactive -->
+<a class="text-on-surface-variant hover:text-on-surface px-4 py-3 flex items-center gap-3 transition-colors hover:bg-surface-variant/50 w-full" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="hub">hub</span>
+<span class="font-label-caps text-label-caps">Architecture Index</span>
+</a>
+<!-- Inactive -->
+<a class="text-on-surface-variant hover:text-on-surface px-4 py-3 flex items-center gap-3 transition-colors hover:bg-surface-variant/50 w-full" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="dns">dns</span>
+<span class="font-label-caps text-label-caps">Infrastructure Tier</span>
+</a>
+<!-- Active -->
+<a class="bg-primary/10 text-primary border-r-4 border-primary px-4 py-3 flex items-center gap-3 translate-x-1 transition-transform w-full relative" href="#">
+<span class="material-symbols-outlined text-[20px] shadow-[0_0_8px_rgba(79,222,187,0.5)] rounded-full" data-icon="database">database</span>
+<span class="font-label-caps text-label-caps font-bold">Core Logic &amp; Data</span>
+<div class="absolute inset-0 bg-gradient-to-r from-transparent to-primary/5 pointer-events-none"></div>
+</a>
+<!-- Inactive -->
+<a class="text-on-surface-variant hover:text-on-surface px-4 py-3 flex items-center gap-3 transition-colors hover:bg-surface-variant/50 w-full" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="layers">layers</span>
+<span class="font-label-caps text-label-caps">Client Interface</span>
+</a>
+</div>
+<!-- Footer Links -->
+<div class="px-4 flex flex-col gap-2 mt-auto border-t border-glass pt-4">
+<a class="text-on-surface-variant hover:text-on-surface py-2 flex items-center gap-3 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="terminal">terminal</span>
+<span class="font-label-caps text-label-caps">DevOps Logs</span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface py-2 flex items-center gap-3 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="menu_book">menu_book</span>
+<span class="font-label-caps text-label-caps">API Docs</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-0 md:ml-[280px] mt-16 md:mt-0 overflow-y-auto overflow-x-hidden p-margin-mobile md:p-margin-desktop bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-surface-container-low/20 via-background-deep to-background-deep relative">
+<!-- Background Grid Pattern -->
+<div class="absolute inset-0 pointer-events-none opacity-[0.03]" style="background-image: linear-gradient(var(--outline-variant) 1px, transparent 1px), linear-gradient(90deg, var(--outline-variant) 1px, transparent 1px); background-size: 24px 24px;"></div>
+<!-- Page Header -->
+<header class="mb-8 relative z-10">
+<div class="flex items-center gap-2 text-on-surface-variant mb-2">
+<span class="font-code-xs text-code-xs uppercase tracking-widest text-primary/70">System Index</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="font-code-xs text-code-xs uppercase tracking-widest">Tier 2</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg font-bold tracking-tight text-on-surface drop-shadow-sm">Core Logic &amp; Data Tier</h2>
+<p class="mt-2 text-on-surface-variant max-w-2xl">Central registry for data schemas, entity relationships, and active security middleware policies protecting internal routing.</p>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter relative z-10">
+<!-- Flowchart Section (Spans full width) -->
+<section class="col-span-1 md:col-span-12 glass-panel rounded-xl p-6 flex flex-col gap-6 relative overflow-hidden">
+<div class="flex items-center justify-between border-b border-glass pb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secure-emerald">security</span>
+<h3 class="font-body-lg text-body-lg font-semibold text-on-surface">Cryptographic Claims-Matching &amp; Route Guards</h3>
+</div>
+<span class="font-code-xs text-code-xs bg-secure-emerald/10 text-secure-emerald px-2 py-1 rounded border border-secure-emerald/20">LIVE TRAFFIC POLICY</span>
+</div>
+<!-- Flowchart Canvas -->
+<div class="flex flex-col md:flex-row items-center justify-center gap-4 py-8 relative">
+<!-- Flow Line -->
+<div class="absolute top-1/2 left-[5%] right-[5%] arch-line-h -translate-y-1/2 hidden md:block z-0"></div>
+<!-- Node 1 -->
+<div class="bg-surface-container-high border border-glass rounded-lg p-4 w-40 relative z-10 flex flex-col items-center text-center shadow-lg group hover:border-active-cyan/50 transition-colors cursor-default">
+<div class="absolute top-0 left-0 w-full h-[2px] bg-secondary-container"></div>
+<span class="material-symbols-outlined text-secondary-container mb-2">cookie</span>
+<span class="font-code-sm text-code-sm font-bold text-on-surface block">HttpOnly Cookie</span>
+<span class="font-code-xs text-code-xs text-on-surface-variant block mt-1">Extract session ID</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant md:-rotate-90 z-10 bg-background-deep p-1 rounded-full border border-glass text-sm">arrow_downward</span>
+<!-- Node 2 -->
+<div class="bg-surface-container-high border border-secure-emerald/30 rounded-lg p-4 w-40 relative z-10 flex flex-col items-center text-center shadow-lg shadow-secure-emerald/5 group hover:border-secure-emerald transition-colors cursor-default">
+<div class="absolute top-0 left-0 w-full h-[2px] bg-secure-emerald shadow-[0_0_8px_rgba(37,194,160,0.8)]"></div>
+<span class="material-symbols-outlined text-secure-emerald mb-2 data-pulse">verified_user</span>
+<span class="font-code-sm text-code-sm font-bold text-secure-emerald block">JWT Verify</span>
+<span class="font-code-xs text-code-xs text-on-surface-variant block mt-1">Cryptographic Hash Val</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant md:-rotate-90 z-10 bg-background-deep p-1 rounded-full border border-glass text-sm">arrow_downward</span>
+<!-- Node 3 -->
+<div class="bg-surface-container-high border border-glass rounded-lg p-4 w-40 relative z-10 flex flex-col items-center text-center shadow-lg group hover:border-active-cyan/50 transition-colors cursor-default">
+<div class="absolute top-0 left-0 w-full h-[2px] bg-tertiary"></div>
+<span class="material-symbols-outlined text-tertiary mb-2">admin_panel_settings</span>
+<span class="font-code-sm text-code-sm font-bold text-on-surface block">Claim Assert</span>
+<span class="font-code-xs text-code-xs text-on-surface-variant block mt-1">ADMIN Role Lookup</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant md:-rotate-90 z-10 bg-background-deep p-1 rounded-full border border-glass text-sm">arrow_downward</span>
+<!-- Node 4 (Failure Branch) -->
+<div class="relative z-10 flex flex-col items-center text-center">
+<div class="absolute -top-6 left-1/2 w-[1px] h-6 arch-line-v md:hidden"></div>
+<div class="bg-surface-container-highest border border-warning-amber/50 rounded-lg p-4 w-40 shadow-lg group hover:border-warning-amber transition-colors cursor-default">
+<div class="absolute top-0 left-0 w-full h-[2px] bg-warning-amber shadow-[0_0_8px_rgba(255,177,0,0.8)]"></div>
+<span class="material-symbols-outlined text-warning-amber mb-2">gpp_bad</span>
+<span class="font-code-sm text-code-sm font-bold text-warning-amber block">State Flush</span>
+<span class="font-code-xs text-code-xs text-on-surface-variant block mt-1">Hard Redirect (401/403)</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Data Schemas (Col 1) -->
+<section class="col-span-1 md:col-span-5 flex flex-col gap-4">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest pl-2 border-l-2 border-primary/30">Data Entities</h3>
+<!-- Node Card -->
+<div class="bg-surface-container border border-glass rounded-lg p-4 relative overflow-hidden group hover:bg-surface-container-high transition-colors">
+<div class="h-[2px] absolute top-0 left-0 w-full bg-secondary"></div>
+<div class="flex items-start justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">data_object</span>
+<span class="font-code-sm text-code-sm text-secondary font-semibold">User.js</span>
+</div>
+<span class="font-code-xs text-code-xs text-on-surface-variant">Schema</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mt-2">Core user profile schema mapping. Includes personal identification data and relational mapping to activity logs.</p>
+</div>
+<!-- Node Card (Secure Accent) -->
+<div class="bg-surface-container border border-glass rounded-lg p-4 relative overflow-hidden group hover:bg-surface-container-high transition-colors">
+<div class="h-[2px] absolute top-0 left-0 w-full bg-secure-emerald"></div>
+<div class="flex items-start justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secure-emerald text-[18px]">lock</span>
+<span class="font-code-sm text-code-sm text-secure-emerald font-semibold">Message.js</span>
+</div>
+<span class="font-code-xs text-code-xs bg-secure-emerald/10 text-secure-emerald px-1.5 rounded">Encrypted</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mt-2">Handles transport of secure messages. Payloads are encrypted at rest using system-level tokens before database insertion.</p>
+</div>
+</section>
+<!-- Security & Crypto Services (Col 2) -->
+<section class="col-span-1 md:col-span-7 flex flex-col gap-4">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest pl-2 border-l-2 border-secure-emerald/30">Security Core &amp; Middleware</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Node Card (Crypto) -->
+<div class="bg-surface-container border border-secure-emerald/20 rounded-lg p-4 relative overflow-hidden group hover:border-secure-emerald/50 transition-colors shadow-[inset_0_0_20px_rgba(37,194,160,0.02)]">
+<div class="h-[2px] absolute top-0 left-0 w-full bg-secure-emerald shadow-[0_0_5px_rgba(37,194,160,0.8)]"></div>
+<div class="flex items-start justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secure-emerald text-[18px]">vpn_key</span>
+<span class="font-code-sm text-code-sm text-secure-emerald font-semibold">cryptoHelper.js</span>
+</div>
+<span class="font-code-xs text-code-xs bg-secure-emerald/10 text-secure-emerald px-1.5 rounded border border-secure-emerald/30">Peak Iteration Hardened</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm mt-2 mb-3">Implements AES-256-GCM encryption standards for payload obfuscation across all network boundaries.</p>
+<div class="flex gap-2">
+<span class="font-code-xs text-code-xs bg-surface-variant text-on-surface px-2 py-0.5 rounded border border-glass">AES-256</span>
+<span class="font-code-xs text-code-xs bg-surface-variant text-on-surface px-2 py-0.5 rounded border border-glass">GCM Mode</span>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<!-- Node Card -->
+<div class="bg-surface-container border border-glass rounded-lg p-3 relative overflow-hidden group hover:bg-surface-container-high transition-colors">
+<div class="h-[2px] absolute top-0 left-0 w-full bg-primary"></div>
+<div class="flex items-start justify-between mb-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">policy</span>
+<span class="font-code-sm text-code-sm text-primary font-semibold">authMiddleware.js</span>
+</div>
+<span class="font-code-xs text-code-xs bg-primary/10 text-primary px-1.5 rounded border border-primary/30">Peak Iteration Hardened</span>
+</div>
+<p class="font-code-xs text-code-xs text-on-surface-variant mt-1">JWT &amp; HttpOnly Cookie parser. Implements Token-Authenticated Claim Isolation.</p>
+</div>
+<!-- Resilient Service Worker Card -->
+<div class="bg-surface-container border border-glass rounded-lg p-3 relative overflow-hidden group hover:bg-surface-container-high transition-colors">
+<div class="h-[2px] absolute top-0 left-0 w-full bg-secondary-fixed"></div>
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-secondary-fixed text-[16px]">cloud_sync</span>
+<span class="font-code-sm text-code-sm text-secondary-fixed font-semibold">Resilient Service Worker</span>
+</div>
+<p class="font-code-xs text-code-xs text-on-surface-variant">Intercepts fetch promise rejections, yielding standard 503 fallback response.</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</body></html>
